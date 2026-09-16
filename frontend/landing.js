@@ -7,6 +7,7 @@
   if (!api) return;
   const { CONFIG, CHAIN_ORDER } = api;
   const getRoute = api.getRoute || (() => ({ from: 'bot', to: 'arb' }));
+  const MARK = (k) => (window.TrestleIcon ? window.TrestleIcon.mark(k) : '');
 
   // ---- twelve-route matrix -------------------------------------------------
   const matrix = document.getElementById('route-matrix');
@@ -18,10 +19,10 @@
         const f = CONFIG[from], t = CONFIG[to];
         rows.push(
           `<div class="matrix-row">
-             <span class="cell-chain"><span class="chain-icon ${f.kind}">${f.icon}</span>${f.name} ${f.network}</span>
-             <span class="cell-chain"><span class="chain-icon ${t.kind}">${t.icon}</span>${t.name} ${t.network}</span>
-             <span class="cell-domain">${f.domain} → ${t.domain}</span>
-             <span class="cell-asset">${f.tokenLabel} → ${t.tokenLabel}</span>
+             <span class="cell-chain"><span class="chain-icon ${f.kind}">${MARK(from)}</span>${f.name} ${f.network}</span>
+             <span class="cell-chain"><span class="chain-icon ${t.kind}">${MARK(to)}</span>${t.name} ${t.network}</span>
+             <span class="cell-domain">${f.domain}<i class="arrow" data-icon="arrow-right"></i>${t.domain}</span>
+             <span class="cell-asset">${f.tokenLabel}<i class="arrow" data-icon="arrow-right"></i>${t.tokenLabel}</span>
              <span class="cell-status">live</span>
            </div>`);
       }
@@ -34,7 +35,7 @@
   if (chainList) {
     chainList.innerHTML = CHAIN_ORDER.map((k) => {
       const c = CONFIG[k];
-      return `<li><span class="chain-icon ${c.kind}">${c.icon}</span>
+      return `<li><span class="chain-icon ${c.kind}">${MARK(k)}</span>
                 <span>${c.name}<span class="net">${c.network}</span></span>
                 <span class="dom">${c.domain}</span></li>`;
     }).join('');
@@ -80,6 +81,8 @@
   }
   heartbeat();
   setInterval(heartbeat, 30000);
+
+  if (window.TrestleIcon) window.TrestleIcon.hydrate();
 
   // ---- scroll reveals -----------------------------------------------------
   const targets = document.querySelectorAll('.reveal');

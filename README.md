@@ -301,9 +301,10 @@ The demo bridge is branded **Trestle** (`trestle.io` was free at time of writing
 trestle is a bridge type, which is exactly what the product is. Branding is front-end only:
 contracts, relayer and scripts are unchanged.
 
-Design direction: **acid chartreuse on near-black** — one accent used for keylines and
-outlines rather than fills, condensed grotesk headings, an expanded outlined wordmark, and
-mono for every on-chain value. The UI is now split into product pages instead of one crowded
+Design direction: **instrument** — acid chartreuse on near-black with drafting-board geometry:
+corner registration brackets, dimension rules with end ticks, section index numerals, hatch
+fills, tabular mono numerals and one stroked icon set (`frontend/icons.js`) with geometric
+chain marks. No emoji and no text glyphs are used as icons anywhere in the UI. The UI is now split into product pages instead of one crowded
 landing page:
 
 - `/` — home/positioning and high-level proof
@@ -332,6 +333,7 @@ curl -s localhost:8088/api/status
 | `frontend/security.html` | testnet trust model and mainnet readiness boundary |
 | `frontend/docs.html` | developer quickstart and repo guide |
 | `frontend/config.js` | shared chain configuration for all pages |
+| `frontend/icons.js` | geometric SVG icon set + chain marks (no emoji anywhere in the UI) |
 | `frontend/styles.css` | design tokens + layout (single accent, keyline cards) |
 | `frontend/app.js` | wallet, route selection, balances, transfer + status steps |
 | `frontend/nav.js` | shared active navigation + mobile menu |

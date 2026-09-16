@@ -1,7 +1,9 @@
-// Trestle — 4-chain USDT bridge UI (BOT testnet ↔ Arbitrum / Base / Arc Sepolia-testnets).
+// Trestle — 4-chain USDT bridge UI (BOT testnet and the Arbitrum / Base / Arc testnets).
 // Any-to-any through the Hyperlane warp mesh: every chain below is enrolled with every other.
 const { ethers } = window;
 const { CONFIG, CHAIN_ORDER } = window.__trestleConfig;
+const ICON = (n) => (window.TrestleIcon ? window.TrestleIcon.svg(n) : '');
+const MARK = (k) => (window.TrestleIcon ? window.TrestleIcon.mark(k) : '');
 
 const ERC20 = ['function approve(address,uint256) returns(bool)','function balanceOf(address) view returns(uint256)','function allowance(address,address) view returns(uint256)'];
 const ROUTER_ABI = [
@@ -61,7 +63,7 @@ function setSteps(active = -1, done = false) {
   const names = ['Wallet confirmed', 'Source transaction confirmed', 'Relayer detected message', 'Destination delivered'];
   statusBox.hidden = false;
   statusBox.innerHTML = names.map((n, i) =>
-    `<div class="status-step ${i < active || done ? 'done' : ''} ${i === active && !done ? 'active' : ''}"><span>${i < active || done ? '✓' : i + 1}</span>${n}</div>`).join('');
+    `<div class="status-step ${i < active || done ? 'done' : ''} ${i === active && !done ? 'active' : ''}"><span>${i < active || done ? ICON('check') : i + 1}</span>${n}</div>`).join('');
 }
 function setRouteLabels() {
   const r = { source: source(), destination: destination() };
@@ -70,9 +72,11 @@ function setRouteLabels() {
     ['from-network', r.source.network], ['to-icon', r.destination.icon], ['to-name', r.destination.name],
     ['to-domain', r.destination.domain], ['to-network', r.destination.network],
   ];
-  fields.forEach(([id, v]) => { $(id).textContent = v; });
+  fields.forEach(([id, v]) => { if (id !== 'from-icon' && id !== 'to-icon') $(id).textContent = v; });
   $('from-icon').className = `chain-icon ${r.source.kind}`;
+  $('from-icon').innerHTML = MARK(r.source.key);
   $('to-icon').className = `chain-icon ${r.destination.kind}`;
+  $('to-icon').innerHTML = MARK(r.destination.key);
   $('amount-symbol').textContent = r.source.tokenLabel;
   $('source-balance-label').textContent = `${r.source.name} ${r.source.tokenLabel} balance`;
   $('destination-balance-label').textContent = `${r.destination.name} ${r.destination.tokenLabel}`;
@@ -122,7 +126,7 @@ async function connect() {
     account = await signer.getAddress();
     localStorage.setItem(WALLET_STORAGE_KEY, '1');
     await updateBalances();
-    button.innerHTML = `Bridge ${account.slice(0, 6)}…${account.slice(-4)} <span>↗</span>`;
+    button.innerHTML = `Bridge ${account.slice(0, 6)}…${account.slice(-4)} ${ICON('arrow-up-right')}`;
     button.onclick = bridge;
     say(`Connected on ${s.name}. You can start a testnet transfer.`);
   } catch (e) { say(e.shortMessage || e.message || 'Wallet connection cancelled.', true); }
@@ -142,7 +146,7 @@ async function restoreWallet() {
       localStorage.setItem(WALLET_STORAGE_KEY, '1');
       localStorage.removeItem(LEGACY_WALLET_STORAGE_KEY);
       await updateBalances();
-      button.innerHTML = `Bridge ${account.slice(0, 6)}…${account.slice(-4)} <span>↗</span>`;
+      button.innerHTML = `Bridge ${account.slice(0, 6)}…${account.slice(-4)} ${ICON('arrow-up-right')}`;
       button.onclick = bridge;
       say(`Wallet reconnected on ${source().name}.`);
     } else {
@@ -215,14 +219,15 @@ async function bridge() {
     say(e.shortMessage || e.message || 'Transfer failed.', true);
   } finally {
     button.disabled = false;
-    button.innerHTML = `Bridge ${account ? account.slice(0, 6) + '…' + account.slice(-4) : 'wallet'} <span>↗</span>`;
+    button.innerHTML = `Bridge ${account ? account.slice(0, 6) + '…' + account.slice(-4) : 'wallet'} ${ICON('arrow-up-right')}`;
   }
 }
 
 function render(data) {
   const rows = (data.recent || []).map((x) => {
     const iconClass = CONFIG[x.destinationKey]?.kind || CONFIG[x.sourceKey]?.kind || (x.direction.includes('BOT') ? 'bot' : 'arb');
-    return `<div class="activity-item"><span class="chain-icon ${iconClass}">↗</span><span class="route">${x.direction}</span><span class="status">Delivered</span><span class="time">${x.time || 'recent'}</span>${x.relayTx ? `<a class="tx" target="_blank" rel="noreferrer" href="${x.explorer}">tx ↗</a>` : ''}</div>`;
+    const iconKey = CONFIG[x.destinationKey] ? x.destinationKey : (CONFIG[x.sourceKey] ? x.sourceKey : 'bot');
+    return `<div class="activity-item"><span class="chain-icon ${iconClass}">${MARK(iconKey)}</span><span class="route">${x.direction}</span><span class="status">Delivered</span><span class="time">${x.time || 'recent'}</span>${x.relayTx ? `<a class="tx" target="_blank" rel="noreferrer" href="${x.explorer}">tx ${ICON('external')}</a>` : ''}</div>`;
   }).join('');
   activityList.innerHTML = rows || '<div class="activity-item"><span class="route">No new transfers yet</span><span class="time">Relayer is watching</span></div>';
 }
@@ -269,7 +274,7 @@ if (window.ethereum) {
       account = null; signer = null;
       localStorage.removeItem(WALLET_STORAGE_KEY);
       localStorage.removeItem(LEGACY_WALLET_STORAGE_KEY);
-      button.innerHTML = 'Connect wallet <span>↗</span>'; button.onclick = connect;
+      button.innerHTML = `${ICON('wallet')} Connect wallet ${ICON('arrow-up-right')}`; button.onclick = connect;
       balance.textContent = 'Connect wallet'; destinationBalance.textContent = '—'; say('Wallet disconnected.');
     }
   });

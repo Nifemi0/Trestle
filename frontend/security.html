@@ -5,50 +5,86 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#101111" />
   <title>Security — Trestle</title>
-  <meta name="description" content="Trestle security model and mainnet readiness boundary." />
+  <meta name="description" content="Trestle testnet trust model, protections in place, and the mainnet readiness path." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css" />
 </head>
-<body class="">
+<body>
   <div class="grid-bg" aria-hidden="true"></div>
   <header class="topbar">
     <a class="brand" href="/">
-      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 20h20M5 20l3-11M19 20l-3-11M12 20V9M5 9h14M8.5 9V5.5h7V9M12 5.5V2.5"/></svg></span>
+      <span class="brand-mark" data-icon="trestle" data-weight="1.3" aria-hidden="true"></span>
       <span class="brand-name">trestle</span>
     </a>
-    <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="site-nav">menu</button>
+    <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="site-nav"><span data-icon="menu"></span> menu</button>
     <nav class="nav" id="site-nav" aria-label="Primary">
-      <a href="/">Home</a>
-      <a href="/bridge">Bridge</a>
-      <a href="/status">Status</a>
-      <a href="/routes">Routes</a>
-      <a href="/proof">Proof</a>
-      <a href="/security">Security</a>
-      <a href="/docs">Docs</a>
+      <a href="/">Home</a><a href="/bridge">Bridge</a><a href="/status">Status</a><a href="/routes">Routes</a><a href="/proof">Proof</a><a href="/security">Security</a><a href="/docs">Docs</a>
     </nav>
     <div class="topbar-right">
       <span class="pill live"><span class="pulse"></span> testnet live</span>
-      <a class="button tiny" href="/bridge">Launch bridge <span>↘</span></a>
+      <a class="button tiny" href="/bridge">Launch bridge <span data-icon="arrow-down-right"></span></a>
     </div>
   </header>
   <main>
-    <section class="page-hero"><div class="page-kicker">SECURITY MODEL</div><h1>Honest testnet boundary.</h1><p class="lede">Trestle is not mainnet certified yet. This page states what is protected now and what must change before real funds.</p></section>
-    <section class="page-shell page-grid two">
-      <div class="info-card"><div class="tab-outline sm">CURRENT</div><h3>Testnet trust model</h3><p>TrustedRelayerIsm accepts messages processed by the configured relayer/deployer key. Synthetic remote assets are botUSDT testnet representations.</p></div>
-      <div class="info-card"><div class="tab-outline sm">PROTECTED</div><h3>Router-scoped relay</h3><p>The relayer only processes messages whose origin, destination, sender and recipient match a Trestle route.</p></div>
-      <div class="info-card"><div class="tab-outline sm">KNOWN LIMIT</div><h3>Single trusted key</h3><p>The deployer/relayer key remains privileged in this prototype. Mainnet requires separated keys and validator/multisig ISM.</p></div>
-      <div class="info-card"><div class="tab-outline sm">NEXT</div><h3>Mainnet path</h3><p>Validator/multisig ISM, isolated relayer key, rate caps, RPC redundancy, alerting and external audit.</p></div>
+    <section class="page-hero">
+      <div class="page-kicker">SECURITY / TRUST BOUNDARY</div>
+      <div class="dimrule tick-ends"><span>MODEL <b>trusted relayer</b></span><span>SCOPE <b>testnet</b></span><span>MAINNET <b>not ready</b></span></div>
+      <h1>The honest boundary.</h1>
+      <p class="lede">Trestle is not certified and not mainnet-ready. This page states what protects users today, what does not, and what must change first.</p>
+    </section>
+
+    <section class="sec" style="margin-top:1.6rem">
+      <table class="spec">
+        <tr><th>Property</th><th>Today (testnet)</th><th>Required for mainnet</th></tr>
+        <tr><td>Message validity</td><td class="na">TrustedRelayerIsm — one configured relayer accepts the message</td><td class="na">Validator set or multisig ISM with a threshold</td></tr>
+        <tr><td>Relay scope</td><td class="na">Router-scoped: origin, destination, sender and recipient must all match a Trestle route</td><td class="na">Keep, plus monitoring on rejected traffic</td></tr>
+        <tr><td>Key custody</td><td class="na">One deployer key is also the trusted relayer</td><td class="na">Isolated relayer key; owner key offline</td></tr>
+        <tr><td>Value limits</td><td class="na">None — testnet assets only</td><td class="na">Per-transfer, per-route and daily caps with a pause path</td></tr>
+        <tr><td>Remote assets</td><td class="na">Synthetic botUSDT, no real value</td><td class="na">Canonical liquidity, funded by the ecosystem not the builder</td></tr>
+        <tr><td>Verdict</td><td class="na">Testnet-verified prototype</td><td class="na">Independent audit before any real funds</td></tr>
+      </table>
+    </section>
+
+    <section class="sec">
+      <div class="sec-head">
+        <span class="sec-idx">01</span>
+        <div><div class="eyebrow">WHAT ALREADY HOLDS</div><h2>Protections in place.</h2></div>
+      </div>
+      <div class="ledger">
+        <div class="ledger-row"><span class="glyph" data-icon="shield"></span><span>Relayer ignores mailbox messages that are not a Trestle router-to-router route</span><span class="val">enforced</span></div>
+        <div class="ledger-row"><span class="glyph" data-icon="check"></span><span>Locked collateral is checked against summed synthetic supply on every test run</span><span class="val">enforced</span></div>
+        <div class="ledger-row"><span class="glyph" data-icon="gauge"></span><span>Heartbeat, stuck-message and gas-floor watchdog with alerts</span><span class="val">running</span></div>
+        <div class="ledger-row"><span class="glyph" data-icon="lock"></span><span>Deployer keys, state files and env files are gitignored and never published</span><span class="val">enforced</span></div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="sec-head flip">
+        <div class="offset-b"><div class="eyebrow">MAINNET PATH</div><h2>Order of operations.</h2></div>
+        <span class="sec-idx">02</span>
+      </div>
+      <div class="offset-b">
+        <table class="spec">
+          <tr><th>Step</th><th>Change</th><th>Why</th></tr>
+          <tr><td>01</td><td class="na">Replace TrustedRelayerIsm with a validator or multisig ISM</td><td class="na">Removes single-key message validity</td></tr>
+          <tr><td>02</td><td class="na">Separate relayer key from the owner key</td><td class="na">Limits blast radius of a hot key</td></tr>
+          <tr><td>03</td><td class="na">Add transfer caps, rate limits and a pause control</td><td class="na">Bounds damage from any residual failure</td></tr>
+          <tr><td>04</td><td class="na">Add RPC redundancy and alerting for every leg</td><td class="na">Arc currently has a single public RPC</td></tr>
+          <tr><td>05</td><td class="na">Commission an independent audit</td><td class="na">The only thing that turns verified into certified</td></tr>
+        </table>
+      </div>
     </section>
   </main>
   <footer>
     <div class="foot-brand"><span class="brand-name">trestle</span><span class="foot-sub">BOT Chain interop · testnet</span></div>
     <nav class="foot-links" aria-label="Footer">
-      <a href="/bridge">Bridge</a><a href="/status">Status</a><a href="/proof">Proof</a><a href="/security">Security</a><a href="/docs">Docs</a>
+      <a href="/bridge">Bridge</a><a href="/status">Status</a><a href="/routes">Routes</a><a href="/proof">Proof</a><a href="/security">Security</a><a href="/docs">Docs</a>
     </nav>
     <p class="foot-note">Unaudited testnet software. No token, no sale, no custody of user funds.</p>
   </footer>
+  <script src="/icons.js"></script>
   <script src="/nav.js"></script>
 </body>
 </html>

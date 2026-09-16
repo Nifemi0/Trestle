@@ -1,23 +1,25 @@
 (() => {
-  const short = (v) => v == null ? '—' : String(v);
+  const ICON = (n) => (window.TrestleIcon ? window.TrestleIcon.svg(n) : '');
+  const MARK = (k) => (window.TrestleIcon ? window.TrestleIcon.mark(k) : '');
   const set = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value; };
   function renderRecent(recent) {
     const list = document.getElementById('status-recent');
     if (!list) return;
     list.innerHTML = (recent || []).map((x) => `
       <div class="activity-item">
-        <span class="chain-icon ${x.destinationKey || 'bot'}">↗</span>
+        <span class="chain-icon ${x.destinationKey || 'bot'}">${MARK(x.destinationKey || 'bot')}</span>
         <span class="route">${x.direction}</span>
         <span class="status">Delivered</span>
         <span class="time">${x.time || 'recent'}</span>
-        ${x.relayTx ? `<a class="tx" target="_blank" rel="noreferrer" href="${x.explorer}">tx ↗</a>` : ''}
+        ${x.relayTx ? `<a class="tx" target="_blank" rel="noreferrer" href="${x.explorer}">tx ${ICON('external')}</a>` : ''}
       </div>`).join('') || '<div class="activity-item"><span class="route">No relays yet</span><span class="time">watching</span></div>';
   }
   async function refreshStatus() {
     try {
       const r = await fetch('/api/status', { cache: 'no-store' });
       const d = await r.json();
-      set('status-state', d.status || 'unknown');
+      const st = d.status || 'unknown';
+      set('status-state', st); set('gauge-state', st); set('status-state-2', st);
       set('status-route', d.route || '—');
       set('status-recent-count', String((d.recent || []).length));
       set('status-latest-route', d.recent?.[0]?.direction || '—');
@@ -29,4 +31,5 @@
   }
   refreshStatus();
   setInterval(refreshStatus, 30000);
+  if (window.TrestleIcon) window.TrestleIcon.hydrate();
 })();

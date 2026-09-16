@@ -5,54 +5,86 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#101111" />
   <title>Proof — Trestle</title>
-  <meta name="description" content="Verification and pressure-test evidence for Trestle." />
+  <meta name="description" content="Verification ledger and reproducible pressure-test evidence for Trestle." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css" />
 </head>
-<body class="">
+<body>
   <div class="grid-bg" aria-hidden="true"></div>
   <header class="topbar">
     <a class="brand" href="/">
-      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 20h20M5 20l3-11M19 20l-3-11M12 20V9M5 9h14M8.5 9V5.5h7V9M12 5.5V2.5"/></svg></span>
+      <span class="brand-mark" data-icon="trestle" data-weight="1.3" aria-hidden="true"></span>
       <span class="brand-name">trestle</span>
     </a>
-    <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="site-nav">menu</button>
+    <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="site-nav"><span data-icon="menu"></span> menu</button>
     <nav class="nav" id="site-nav" aria-label="Primary">
-      <a href="/">Home</a>
-      <a href="/bridge">Bridge</a>
-      <a href="/status">Status</a>
-      <a href="/routes">Routes</a>
-      <a href="/proof">Proof</a>
-      <a href="/security">Security</a>
-      <a href="/docs">Docs</a>
+      <a href="/">Home</a><a href="/bridge">Bridge</a><a href="/status">Status</a><a href="/routes">Routes</a><a href="/proof">Proof</a><a href="/security">Security</a><a href="/docs">Docs</a>
     </nav>
     <div class="topbar-right">
       <span class="pill live"><span class="pulse"></span> testnet live</span>
-      <a class="button tiny" href="/bridge">Launch bridge <span>↘</span></a>
+      <a class="button tiny" href="/bridge">Launch bridge <span data-icon="arrow-down-right"></span></a>
     </div>
   </header>
   <main>
-    <section class="page-hero"><div class="page-kicker">VERIFICATION</div><h1>Evidence before claims.</h1><p class="lede">Trestle is testnet-verified: on-chain wiring checks, relayer-scope regression, and two million local pressure cases.</p></section>
-    <section class="page-shell page-grid two">
-      <div class="proof-card"><div class="big-metric">1,000,000</div><div class="metric-label">relayer/message cases</div><p>Zero false accepts, zero false rejects, forged event-body messages rejected.</p></div>
-      <div class="proof-card"><div class="big-metric">1,000,000</div><div class="metric-label">accounting pressure cases</div><p>Locked collateral equalled total synthetic supply at every sampled invariant check.</p></div>
-      <div class="proof-card"><div class="big-metric">PASS</div><div class="metric-label">npm test</div><p>Read-only chain checks validate domains, mailboxes, routers, ISMs, relayer key and accounting.</p></div>
-      <div class="proof-card"><div class="big-metric">0</div><div class="metric-label">critical/high/moderate audit issues</div><p>Remaining dependency notices are low-severity transitive items under Hyperlane's older stack.</p></div>
+    <section class="page-hero">
+      <div class="page-kicker">EVIDENCE / VERIFICATION</div>
+      <div class="dimrule tick-ends"><span>ON-CHAIN <b>PASS</b></span><span>FUZZ <b>1M</b></span><span>PRESSURE <b>1M</b></span></div>
+      <h1>Evidence before claims.</h1>
+      <p class="lede">Everything on this page is reproducible from the public repository. If a claim has no evidence behind it, it is listed as not yet done.</p>
     </section>
-    <section class="page-shell docs-block"><h2>Repeat locally</h2><pre>npm test
-npm run test:pressure:quick
-npm run test:pressure:relayer
-npm run test:pressure:accounting</pre></section>
+
+    <section class="sec" style="margin-top:1.6rem">
+      <div class="metrics">
+        <div><dt>Relayer fuzz cases</dt><dd>1.0<small>M</small></dd><span class="bar" style="width:100%"></span></div>
+        <div><dt>False accepts</dt><dd class="ok">0</dd><span class="bar" style="width:2%"></span></div>
+        <div><dt>False rejects</dt><dd class="ok">0</dd><span class="bar" style="width:2%"></span></div>
+        <div><dt>Accounting failures</dt><dd class="ok">0</dd><span class="bar" style="width:2%"></span></div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="sec-head">
+        <span class="sec-idx">01</span>
+        <div><div class="eyebrow">WHAT WAS TESTED</div><h2>The ledger.</h2><p>Each row is something that actually ran against this deployment or its logic — not a projected number.</p></div>
+      </div>
+      <div class="ledger">
+        <div class="ledger-row"><span class="glyph" data-icon="check"></span><span>Chain id, mailbox bytecode, router / mailbox binding on all four chains</span><span class="val">PASS</span></div>
+        <div class="ledger-row"><span class="glyph" data-icon="check"></span><span>Remote router enrollment — all twelve directions</span><span class="val">PASS</span></div>
+        <div class="ledger-row"><span class="glyph" data-icon="check"></span><span>ISM binding and trusted relayer identity per chain</span><span class="val">PASS</span></div>
+        <div class="ledger-row"><span class="glyph" data-icon="check"></span><span>Locked collateral equals summed synthetic supply</span><span class="val">179 = 179</span></div>
+        <div class="ledger-row"><span class="glyph" data-icon="flask"></span><span>Relayer message fuzz — forged sender, recipient, origin, destination, malformed bodies</span><span class="val">0 / 0</span></div>
+        <div class="ledger-row"><span class="glyph" data-icon="flask"></span><span>Accounting pressure — random route traffic across all twelve paths</span><span class="val">0 failures</span></div>
+        <div class="ledger-row"><span class="glyph" data-icon="shield"></span><span>Router-scoped relay — non-Trestle mailbox messages rejected</span><span class="val">PASS</span></div>
+        <div class="ledger-row"><span class="glyph" data-icon="alert"></span><span>External third-party audit</span><span class="val">not yet</span></div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="sec-head flip">
+        <div class="offset-b"><div class="eyebrow">REPRODUCE</div><h2>Run it yourself.</h2></div>
+        <span class="sec-idx">02</span>
+      </div>
+      <div class="offset-b docs-block" style="margin-top:0">
+<pre>npm install
+npm test                        # on-chain wiring + accounting + relayer scope
+npm run test:pressure:quick     # 10k relayer fuzz + 10k accounting, seconds
+npm run test:pressure:relayer   # 1,000,000-case relayer fuzz
+npm run test:pressure:accounting   # 1,000,000-case accounting pressure
+node frontend/logic_test.js     # bridge routing logic, no browser</pre>
+        <p class="statement" style="margin-top:1.2rem">The pressure harnesses are deterministic: they seed a PRNG, so a reported failure can be replayed with the same <span class="mono">--seed</span> value.</p>
+      </div>
+    </section>
   </main>
   <footer>
     <div class="foot-brand"><span class="brand-name">trestle</span><span class="foot-sub">BOT Chain interop · testnet</span></div>
     <nav class="foot-links" aria-label="Footer">
-      <a href="/bridge">Bridge</a><a href="/status">Status</a><a href="/proof">Proof</a><a href="/security">Security</a><a href="/docs">Docs</a>
+      <a href="/bridge">Bridge</a><a href="/status">Status</a><a href="/routes">Routes</a><a href="/proof">Proof</a><a href="/security">Security</a><a href="/docs">Docs</a>
     </nav>
     <p class="foot-note">Unaudited testnet software. No token, no sale, no custody of user funds.</p>
   </footer>
+  <script src="/icons.js"></script>
   <script src="/nav.js"></script>
 </body>
 </html>

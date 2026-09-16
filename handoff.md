@@ -48,7 +48,8 @@ Frontend directory: `/root/botchain-bridge/frontend/`
 - `security.html` — testnet trust model and mainnet-readiness path
 - `docs.html` — developer quickstart and repo guide
 - `config.js` — shared chain config used by every page
-- `styles.css` — design tokens + layout (single accent, keyline cards, mobile-first breakpoints)
+- `icons.js` — geometric stroked SVG icon set + per-chain marks; `data-icon`/`data-mark` hydrate automatically (no emoji, no text glyphs)
+- `styles.css` — design tokens + the *instrument* geometry layer: registration brackets, dimension rules, section indices, hatch fills, spec tables, monitor board, mobile-first breakpoints
 - `mesh.js` — hero point-lattice terrain canvas (capped lattice, ~20fps, pauses off-screen, reduced-motion safe)
 - `landing.js` — route matrix, facts rail, relayer heartbeat, scroll reveals
 - `status.js` — live status page polling/rendering

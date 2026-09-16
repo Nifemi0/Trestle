@@ -5,54 +5,97 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#101111" />
   <title>Docs — Trestle</title>
-  <meta name="description" content="Developer quickstart and repo guide for Trestle." />
+  <meta name="description" content="Developer quickstart, repository layout and operations guide for Trestle." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css" />
 </head>
-<body class="">
+<body>
   <div class="grid-bg" aria-hidden="true"></div>
   <header class="topbar">
     <a class="brand" href="/">
-      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 20h20M5 20l3-11M19 20l-3-11M12 20V9M5 9h14M8.5 9V5.5h7V9M12 5.5V2.5"/></svg></span>
+      <span class="brand-mark" data-icon="trestle" data-weight="1.3" aria-hidden="true"></span>
       <span class="brand-name">trestle</span>
     </a>
-    <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="site-nav">menu</button>
+    <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="site-nav"><span data-icon="menu"></span> menu</button>
     <nav class="nav" id="site-nav" aria-label="Primary">
-      <a href="/">Home</a>
-      <a href="/bridge">Bridge</a>
-      <a href="/status">Status</a>
-      <a href="/routes">Routes</a>
-      <a href="/proof">Proof</a>
-      <a href="/security">Security</a>
-      <a href="/docs">Docs</a>
+      <a href="/">Home</a><a href="/bridge">Bridge</a><a href="/status">Status</a><a href="/routes">Routes</a><a href="/proof">Proof</a><a href="/security">Security</a><a href="/docs">Docs</a>
     </nav>
     <div class="topbar-right">
       <span class="pill live"><span class="pulse"></span> testnet live</span>
-      <a class="button tiny" href="/bridge">Launch bridge <span>↘</span></a>
+      <a class="button tiny" href="/bridge">Launch bridge <span data-icon="arrow-down-right"></span></a>
     </div>
   </header>
   <main>
-    <section class="page-hero"><div class="page-kicker">DEVELOPER DOCS</div><h1>Run and verify Trestle.</h1><p class="lede">Fast commands for the public repo: install, test, run the relayer, and inspect the bridge layout.</p></section>
-    <section class="page-shell docs-block"><h2>Quickstart</h2><pre>npm install
-npm test
-npm run test:pressure:quick
-node frontend/logic_test.js</pre></section>
-    <section class="page-shell page-grid">
-      <div class="info-card"><h3>Source</h3><p><span class="mono">src/relayer.js</span> and <span class="mono">src/health.js</span> run the operational layer.</p></div>
-      <div class="info-card"><h3>Frontend</h3><p><span class="mono">frontend/*.html</span> pages share config from <span class="mono">config.js</span>.</p></div>
-      <div class="info-card"><h3>Tests</h3><p><span class="mono">test/</span> contains chain checks, relayer scope regression and pressure simulations.</p></div>
+    <section class="page-hero">
+      <div class="page-kicker">DEVELOPER / RUN IT</div>
+      <div class="dimrule tick-ends"><span>REPO <b>public</b></span><span>STACK <b>node + python</b></span><span>CHAINS <b>4</b></span></div>
+      <h1>Run and verify Trestle.</h1>
+      <p class="lede">Clone the repository, install, run the test suite, then start the relayer and the frontend. Nothing below needs a funded account.</p>
     </section>
-    <section class="page-shell docs-block"><h2>Repo layout</h2><pre>contracts/  src/  scripts/  test/  state/  frontend/  configs/  registry/  systemd/</pre></section>
+
+    <section class="sec" style="margin-top:1.6rem">
+      <div class="docs-block" style="margin-top:0;border-top:0;padding-top:0">
+        <div class="tab-outline sm">QUICKSTART</div>
+<pre>git clone https://github.com/Nifemi0/Trestle
+cd Trestle
+npm install
+
+npm test                        # on-chain + relayer-scope assertions
+npm run test:pressure:quick     # fast pressure sanity check
+node frontend/logic_test.js     # bridge routing logic
+
+node src/relayer.js --once      # single relay pass
+node src/health.js --verbose    # full status report</pre>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="sec-head">
+        <span class="sec-idx">01</span>
+        <div><div class="eyebrow">LAYOUT</div><h2>Where things live.</h2></div>
+      </div>
+      <table class="spec">
+        <tr><th>Path</th><th>Contents</th></tr>
+        <tr><td>src/</td><td class="na">The two long-running processes: <span class="mono">relayer.js</span> and <span class="mono">health.js</span></td></tr>
+        <tr><td>contracts/</td><td class="na">Compiled Hyperlane warp + ISM artifacts and deployed addresses</td></tr>
+        <tr><td>scripts/</td><td class="na">Deploy, add-chain, transfer and diagnostics tooling</td></tr>
+        <tr><td>test/</td><td class="na">On-chain assertions plus the pressure simulations</td></tr>
+        <tr><td>frontend/</td><td class="na">This UI — pages, shared config, icons, styles</td></tr>
+        <tr><td>configs/ registry/</td><td class="na">Hyperlane core and warp route configuration, local registry metadata</td></tr>
+        <tr><td>systemd/</td><td class="na">Unit files for the relayer and the frontend</td></tr>
+      </table>
+    </section>
+
+    <section class="sec">
+      <div class="sec-head flip">
+        <div class="offset-b"><div class="eyebrow">OPERATIONS</div><h2>Running processes.</h2></div>
+        <span class="sec-idx">02</span>
+      </div>
+      <div class="offset-b docs-block" style="margin-top:0;border-top:0;padding-top:0">
+<pre>systemctl status botchain-relayer
+systemctl status botchain-frontend
+
+journalctl -u botchain-relayer -n 50 --no-pager
+curl -s localhost:8088/api/status</pre>
+        <ul>
+          <li>Poll interval, block range, stuck-message threshold and retries are environment variables on the relayer.</li>
+          <li>Every loop writes relayer_health.json; the watchdog reads that file rather than guessing.</li>
+          <li>Alerts go to alerts.log and to Telegram when the token/chat pair is configured.</li>
+        </ul>
+        <p class="statement" style="margin-top:1.2rem">Never reuse the testnet deployer key for anything holding real value. <span class="mono">deployer.json</span> and <span class="mono">relayer.env</span> stay local and gitignored.</p>
+      </div>
+    </section>
   </main>
   <footer>
     <div class="foot-brand"><span class="brand-name">trestle</span><span class="foot-sub">BOT Chain interop · testnet</span></div>
     <nav class="foot-links" aria-label="Footer">
-      <a href="/bridge">Bridge</a><a href="/status">Status</a><a href="/proof">Proof</a><a href="/security">Security</a><a href="/docs">Docs</a>
+      <a href="/bridge">Bridge</a><a href="/status">Status</a><a href="/routes">Routes</a><a href="/proof">Proof</a><a href="/security">Security</a><a href="/docs">Docs</a>
     </nav>
     <p class="foot-note">Unaudited testnet software. No token, no sale, no custody of user funds.</p>
   </footer>
+  <script src="/icons.js"></script>
   <script src="/nav.js"></script>
 </body>
 </html>
