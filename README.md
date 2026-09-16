@@ -182,7 +182,7 @@ Arc testnet has only one public RPC (no failover possible); no per-transfer valu
 ├── src/           the two long-running processes: the relayer and the health watchdog
 ├── scripts/       deployment + transfer tooling, run on demand
 │   └── diagnostics/  one-off investigation scripts (balances, gas, tx inspection, demo proof)
-├── test/          `npm test` — read-only chain / wiring / accounting assertions
+├── test/          `npm test` + pressure sims — chain/wiring/accounting/relayer assertions
 ├── state/         last-transfer records the test and demo scripts assert against
 ├── frontend/      the Trestle demo UI (static page + /api/status) served on :8088
 ├── configs/       Hyperlane core + warp-route configs used at deploy time
@@ -209,6 +209,7 @@ state/heartbeat, logs, env files) stay gitignored at the repo root.
 | `src/relayer.js` | automatic Dispatch scanner and Mailbox processor (4 chains, 12 routes) |
 | `src/health.js` | status/watchdog: heartbeat, stuck messages, alerts, gas floors, collateral invariant |
 | `test/security_check.js` / `test/relayer_scope_test.js` | `npm test` — read-only chain/accounting checks plus relayer-scope regression tests |
+| `test/pressure_sim.js` / `test/accounting_pressure_sim.js` | pressure tests: `npm run test:pressure:quick`, `npm run test:pressure:relayer`, `npm run test:pressure:accounting` |
 | `scripts/diagnostics/*` | one-off tooling: balance/gas checks, tx inspection, demo proof, legacy single-pair transfers |
 | `systemd/*.service` | unit files for the relayer + demo frontend (installed to `/etc/systemd/system/`) |
 
@@ -325,6 +326,10 @@ Route logic is verified headlessly, so a CSS/markup change cannot silently break
 
 ```bash
 node frontend/logic_test.js        # ALL CHECKS PASSED
+npm test                           # on-chain wiring/accounting + relayer scope regression
+npm run test:pressure:quick        # 10k relayer fuzz + 10k accounting simulation
+npm run test:pressure:relayer      # 1,000,000-case relayer/message pressure run
+npm run test:pressure:accounting   # 1,000,000-case accounting invariant pressure run
 ```
 
 ## Files

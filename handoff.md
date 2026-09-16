@@ -44,13 +44,11 @@ Frontend directory: `/root/botchain-bridge/frontend/`
 - `styles.css` — design tokens + layout (single accent, keyline cards, mobile-first breakpoints)
 - `mesh.js` — hero point-lattice terrain canvas (capped lattice, ~20fps, pauses off-screen, reduced-motion safe)
 - `landing.js` — route matrix, facts rail, relayer heartbeat, scroll reveals
-- `app.js` — wallet connection, network switching, balances, forward/reverse transfers, status polling
+- `app.js` — wallet connection, network switching, balances, forward/reverse transfers, status polling;
+  publishes `window.__trestle` as the single chain-data source and migrates old `relayline_*`
+  browser storage to `trestle_*`
 - `logic_test.js` — headless VM test of the routing logic (24 checks)
 - `server.py` — static server plus `/api/status` (route label + per-destination explorer links)
-
-Known gap: `app.js` still reads/writes the old `relayline_*` localStorage keys and keeps the
-`window.__relayline` global alongside `window.__trestle`; harmless, but delete them once no
-deployed page depends on them.
 
 ## Bridge contracts
 
@@ -240,8 +238,8 @@ Post-inspection fixes applied 2026-09-16:
 1. Keep the public repo current (`https://github.com/Nifemi0/Trestle`) and adapt the positioning to the next BOT Chain hackathon theme.
 2. Add chains 5 and 6 with `add_chain.js --target=op` / `--target=amoy` once their gas is funded —
    the UI route matrix picks them up automatically from `CONFIG`, no markup change needed.
-3. Optional: drop the `relayline_*` localStorage keys and the `window.__relayline` alias once the
-   rename has settled.
+3. Frontend is now fully on Trestle naming (`window.__trestle`, `trestle_*` storage); the old
+   `relayline_*` storage keys are migrated/removed automatically for existing browser sessions.
 4. Decide the grant/positioning story: BOT Chain's official bridge covers only BOT/BNB/TRON/ETH, and
    no mainstream interop (LayerZero/Wormhole/Axelar/CCTP/CCIP/deBridge/LI.FI) supports BOT Chain — the
    mesh-coverage angle is the differentiator, and the UI now shows it as twelve live routes.

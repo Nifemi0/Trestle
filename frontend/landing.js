@@ -1,9 +1,9 @@
 // Trestle landing content: the twelve-route matrix, the route-facts rail,
 // the live relayer heartbeat, and scroll reveals. Reads the chain table that
-// app.js already publishes (window.__trestle / __relayline) so there is one
+// app.js already publishes (window.__trestle) so there is one
 // source of truth for chain data.
 (() => {
-  const api = window.__trestle || window.__relayline;
+  const api = window.__trestle;
   if (!api) return;
   const { CONFIG, CHAIN_ORDER } = api;
 

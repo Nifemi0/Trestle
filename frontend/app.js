@@ -36,8 +36,10 @@ for (const k of CHAIN_ORDER) {
 
 let provider, signer, account;
 let fromKey = 'bot', toKey = 'arb';
-const WALLET_STORAGE_KEY = 'relayline_wallet_connected';
-const ROUTE_STORAGE_KEY = 'relayline_route';
+const WALLET_STORAGE_KEY = 'trestle_wallet_connected';
+const ROUTE_STORAGE_KEY = 'trestle_route';
+const LEGACY_WALLET_STORAGE_KEY = 'relayline_wallet_connected';
+const LEGACY_ROUTE_STORAGE_KEY = 'relayline_route';
 const $ = (id) => document.getElementById(id);
 const button = $('connect'), notice = $('notice'), balance = $('balance'),
       destinationBalance = $('destination-balance'), statusBox = $('transfer-status'),
@@ -59,13 +61,18 @@ function refreshDestinations() {
   fillSelect(toSelect, options, toKey);
 }
 function persistRoute() {
-  try { localStorage.setItem(ROUTE_STORAGE_KEY, JSON.stringify({ fromKey, toKey })); } catch {}
+  try {
+    localStorage.setItem(ROUTE_STORAGE_KEY, JSON.stringify({ fromKey, toKey }));
+    localStorage.removeItem(LEGACY_ROUTE_STORAGE_KEY);
+  } catch {}
 }
 function restoreRoute() {
   try {
-    const saved = JSON.parse(localStorage.getItem(ROUTE_STORAGE_KEY) || 'null');
+    const raw = localStorage.getItem(ROUTE_STORAGE_KEY) || localStorage.getItem(LEGACY_ROUTE_STORAGE_KEY) || 'null';
+    const saved = JSON.parse(raw);
     if (saved && CONFIG[saved.fromKey] && CONFIG[saved.toKey] && saved.fromKey !== saved.toKey) {
       fromKey = saved.fromKey; toKey = saved.toKey;
+      persistRoute();
     }
   } catch {}
 }
@@ -142,7 +149,8 @@ async function connect() {
 }
 
 async function restoreWallet() {
-  if (!window.ethereum || localStorage.getItem(WALLET_STORAGE_KEY) !== '1') return;
+  const shouldRestore = localStorage.getItem(WALLET_STORAGE_KEY) === '1' || localStorage.getItem(LEGACY_WALLET_STORAGE_KEY) === '1';
+  if (!window.ethereum || !shouldRestore) return;
   try {
     const accounts = await window.ethereum.request({ method: 'eth_accounts' });
     if (!accounts.length) return;
@@ -151,6 +159,8 @@ async function restoreWallet() {
     signer = await provider.getSigner();
     const chain = (await window.ethereum.request({ method: 'eth_chainId' })).toLowerCase();
     if (chain === source().chainId) {
+      localStorage.setItem(WALLET_STORAGE_KEY, '1');
+      localStorage.removeItem(LEGACY_WALLET_STORAGE_KEY);
       await updateBalances();
       button.innerHTML = `Bridge ${account.slice(0, 6)}…${account.slice(-4)} <span>↗</span>`;
       button.onclick = bridge;
@@ -276,7 +286,9 @@ if (window.ethereum) {
   window.ethereum.on('accountsChanged', async (xs) => {
     if (xs[0]) { account = xs[0]; localStorage.setItem(WALLET_STORAGE_KEY, '1'); if (provider) await updateBalances(); }
     else {
-      account = null; signer = null; localStorage.removeItem(WALLET_STORAGE_KEY);
+      account = null; signer = null;
+      localStorage.removeItem(WALLET_STORAGE_KEY);
+      localStorage.removeItem(LEGACY_WALLET_STORAGE_KEY);
       button.innerHTML = 'Connect wallet <span>↗</span>'; button.onclick = connect;
       balance.textContent = 'Connect wallet'; destinationBalance.textContent = '—'; say('Wallet disconnected.');
     }
@@ -284,5 +296,4 @@ if (window.ethereum) {
   window.ethereum.on('chainChanged', () => { if (account) { provider = new ethers.BrowserProvider(window.ethereum); signer = null; say(`Network changed. Select ${source().name} when you are ready.`); } });
 }
 
-window.__relayline = { CONFIG, CHAIN_ORDER, availableDestinations, getRoute: () => ({ from: fromKey, to: toKey }) };
-window.__trestle = window.__relayline;   // landing.js reads the chain table from here
+window.__trestle = { CONFIG, CHAIN_ORDER, availableDestinations, getRoute: () => ({ from: fromKey, to: toKey }) };   // landing.js reads the chain table from here

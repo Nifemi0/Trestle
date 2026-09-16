@@ -5,7 +5,10 @@
   "main": "src/relayer.js",
   "scripts": {
     "test": "node test/security_check.js && node test/relayer_scope_test.js",
-    "test:pressure": "node test/pressure_sim.js --cases=1000000 && node test/accounting_pressure_sim.js --cases=1000000",
+    "test:pressure:quick": "node test/pressure_sim.js --cases=10000 && node test/accounting_pressure_sim.js --cases=10000",
+    "test:pressure:relayer": "node test/pressure_sim.js --cases=1000000",
+    "test:pressure:accounting": "node test/accounting_pressure_sim.js --cases=1000000",
+    "test:pressure": "npm run test:pressure:relayer && npm run test:pressure:accounting",
     "relayer": "node src/relayer.js",
     "relayer:once": "node src/relayer.js --once"
   },

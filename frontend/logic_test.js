@@ -35,7 +35,7 @@ sandbox.globalThis = sandbox;
 vm.createContext(sandbox);
 vm.runInContext(fs.readFileSync('/root/botchain-bridge/frontend/app.js', 'utf8'), sandbox, { filename: 'app.js' });
 
-const api = window.__relayline;
+const api = window.__trestle;
 let fails = 0;
 const check = (name, cond, detail = '') => {
   console.log(`${cond ? 'PASS' : 'FAIL'} | ${name}${detail ? ' | ' + detail : ''}`);
