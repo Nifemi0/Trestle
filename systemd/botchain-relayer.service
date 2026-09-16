@@ -1,0 +1,21 @@
+[Unit]
+Description=BOT Chain bridge relayer (Hyperlane testnet mesh: BOT/Arbitrum/Base/Arc)
+Documentation=file:/root/botchain-bridge/handoff.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/root/botchain-bridge
+# optional: TG_TOKEN=..., TG_CHAT=..., RELAYER_ROUTES=..., RELAYER_POLL_MS=...
+EnvironmentFile=-/root/botchain-bridge/relayer.env
+ExecStart=/usr/bin/node /root/botchain-bridge/relayer.js
+Restart=always
+RestartSec=5
+TimeoutStopSec=20
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=botchain-relayer
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,20 @@
+{
+  "name": "botchain-bridge",
+  "version": "1.0.0",
+  "description": "",
+  "main": "make_deployer.js",
+  "scripts": {
+    "test": "node security_check.js",
+    "relayer": "node relayer.js",
+    "relayer:once": "node relayer.js --once"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@hyperlane-xyz/cli": "^44.0.2",
+    "@hyperlane-xyz/core": "^12.1.0",
+    "ethers": "^6.17.0",
+    "solc": "^0.8.22"
+  }
+}

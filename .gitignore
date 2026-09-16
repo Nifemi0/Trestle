@@ -1,0 +1,12 @@
+node_modules/
+logs/
+deployer.key
+deployer.json
+relayer.env
+relayer_state.json
+relayer_health.json
+alerts.log
+*.log
+*.tmp
+__pycache__/
+.DS_Store

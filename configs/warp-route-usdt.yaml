@@ -1,0 +1,40 @@
+# USDT warp route config — BOT Chain testnet ↔ Arbitrum Sepolia ↔ Base Sepolia
+# Collateral on BOT Chain testnet (their canonical testnet USDT, locked).
+# Synthetic legs on the remote chains (minted/burned by the warp route) — this means a
+# remote chain only needs gas, no testnet USDT of its own.
+#
+# Added via add_chain.js (deploys + enrolls); this file is the declarative mirror of the
+# on-chain state and the input for a future `hyperlane warp deploy`.
+#
+# Run:  ./hl.sh warp deploy --config configs/warp-route-usdt.yaml -y
+---
+botchaintestnet:
+  type: collateral
+  token: "0x75edC9335175Fc0552D51D48439F229c10420fe3"
+  owner: "0x9d2B7AF30C1511828f0aea6146A8627739f9d65b"
+  isNative: false
+arbitrumsepolia:
+  type: synthetic
+  owner: "0x9d2B7AF30C1511828f0aea6146A8627739f9d65b"
+  name: "BOT Bridged USDT"
+  symbol: "botUSDT"
+  decimals: 6
+basesepolia:
+  type: synthetic
+  owner: "0x9d2B7AF30C1511828f0aea6146A8627739f9d65b"
+  name: "BOT Bridged USDT"
+  symbol: "botUSDT"
+  decimals: 6
+# ready when funded (add_chain.js --target=op | --target=amoy):
+# optimismsepolia:
+#   type: synthetic
+#   owner: "0x9d2B7AF30C1511828f0aea6146A8627739f9d65b"
+#   name: "BOT Bridged USDT"
+#   symbol: "botUSDT"
+#   decimals: 6
+# polygonamoy:
+#   type: synthetic
+#   owner: "0x9d2B7AF30C1511828f0aea6146A8627739f9d65b"
+#   name: "BOT Bridged USDT"
+#   symbol: "botUSDT"
+#   decimals: 6

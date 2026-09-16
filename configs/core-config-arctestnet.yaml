@@ -1,0 +1,11 @@
+# Hyperlane core deployment config for Arc Testnet (5042002).
+# TESTNET DEMO CONFIG — trusted-relayer ISM: a message is accepted if the configured
+# relayer submitted it. Simple and honest for a demo; NOT the mainnet design.
+owner: "0x9d2B7AF30C1511828f0aea6146A8627739f9d65b"
+defaultIsm:
+  type: trustedRelayerIsm
+  relayer: "0x9d2B7AF30C1511828f0aea6146A8627739f9d65b"
+defaultHook:
+  type: merkleTreeHook
+requiredHook:
+  type: merkleTreeHook

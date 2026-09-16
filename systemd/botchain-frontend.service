@@ -1,0 +1,19 @@
+[Unit]
+Description=BOT Chain bridge demo frontend (static UI + /api/status on :8088)
+Documentation=file:/root/botchain-bridge/handoff.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/root/botchain-bridge/frontend
+Environment=PORT=8088
+ExecStart=/usr/bin/python3 /root/botchain-bridge/frontend/server.py
+Restart=always
+RestartSec=3
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=botchain-frontend
+
+[Install]
+WantedBy=multi-user.target

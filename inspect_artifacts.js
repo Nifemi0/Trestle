@@ -1,0 +1,12 @@
+const fs = require('fs');
+const p = '/root/botchain-bridge/node_modules/@hyperlane-xyz/core/dist/buildArtifact.json';
+const j = JSON.parse(fs.readFileSync(p, 'utf8'));
+const keys = Object.keys(j);
+console.log('total artifacts:', keys.length);
+const want = keys.filter(k => /HypERC20|TrustedRelayer|StaticAggregation|TestIsm|HypNative/i.test(k));
+console.log('\nmatching keys:');
+want.forEach(k => console.log('  ', k));
+const sample = j[keys[0]];
+console.log('\nsample entry keys:', Object.keys(sample || {}));
+const h = j['HypERC20'] || j['HypERC20.sol:HypERC20'];
+if (h) console.log('HypERC20 -> keys:', Object.keys(h), '| abi len:', (h.abi || h.contracts && 0 || []).length, '| bytecode?', !!(h.bytecode || h.bytecode_object));

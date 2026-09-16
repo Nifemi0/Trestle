@@ -1,0 +1,15 @@
+{
+  "bot": {},
+  "arb": {},
+  "collateral": "0xb2BFd514997773eBe9AF77E83e153e3A5405CEB6",
+  "ism": "0x045d2632c411a1394FeCb776A235431ecD0EB49D",
+  "synthetic": "0x291a962DE3f64fA46f7151c6B7492C04CFDCE5f6",
+  "base": {
+    "ism": "0x045d2632c411a1394FeCb776A235431ecD0EB49D",
+    "synthetic": "0x291a962DE3f64fA46f7151c6B7492C04CFDCE5f6"
+  },
+  "arc": {
+    "ism": "0xb2BFd514997773eBe9AF77E83e153e3A5405CEB6",
+    "synthetic": "0x73E7fa23EE5743959A24143B6f51D2B5D9ffC784"
+  }
+}
