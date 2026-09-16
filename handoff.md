@@ -11,7 +11,7 @@ Updated: 2026-09-16 (4-chain UI shipped + renamed **Trestle**)
 - BOT-side `HypERC20Collateral` locks BOT testnet USDT; Arb/Base/Arc legs are synthetic `botUSDT`
 - Wiring is a **full mesh** — every ordered pair is enrolled both directions
 - Automatic relayer runs 4 chains / 12 routes (restrict with `RELAYER_ROUTES="bot<>arc,..."`)
-- `npm test` (`security_check.js`) = **PASS**. The collateral-invariant check was stale (it compared
+- `npm test` (`test/security_check.js`) = **PASS**. The collateral-invariant check was stale (it compared
   locked collateral against the Arbitrum leg alone, so it failed by construction once Arc held 5
   botUSDT); it now sums every synthetic leg, and prints
   `158.0 locked vs 158.0 minted (Arbitrum 153.0 + Base Sepolia 0.0 + Arc Testnet 5.0)`.
@@ -103,15 +103,23 @@ Nothing was created or destroyed: base supply went 0 → 25 → 0 and arb 153 �
 
 | File | Purpose |
 |---|---|
-| `compile_warp.js` / `compile_ism.js` | compile Hyperlane warp + ISM contracts from vendored sources |
-| `deploy_warp.js` | original 2-chain deploy (BOT collateral + Arb synthetic + ISM + enrollment) |
-| `add_chain.js` | **add a chain**: `--preflight` (read-only readiness) / `--deploy`; `--target=base\|op\|amoy` |
-| `resume_chain.js` | **idempotent re-wire**: sends only missing ISM/enrollment txs, with explicit gas limits |
-| `transfer.js` | end-to-end transfer any pair: `node transfer.js --from=bot --to=base --amount=25` |
-| `security_check.js` | `npm test` — read-only integrity/accounting checks for all wired chains |
-| `relayer.js` | 4-chain relayer (12 routes, full mesh) with a `[no-gas]` guard that pauses an unfunded destination |
-| `health.js` | status/watchdog: heartbeat, stuck messages, alerts, gas floors, cursor lag, collateral invariant |
+| `contracts/compile_warp.js` / `contracts/compile_ism.js` | compile Hyperlane warp + ISM contracts from vendored sources |
+| `scripts/deploy_warp.js` | original 2-chain deploy (BOT collateral + Arb synthetic + ISM + enrollment) |
+| `scripts/add_chain.js` | **add a chain**: `--preflight` (read-only readiness) / `--deploy`; `--target=base\|op\|amoy` |
+| `scripts/resume_chain.js` | **idempotent re-wire**: sends only missing ISM/enrollment txs, with explicit gas limits |
+| `scripts/transfer.js` | end-to-end transfer any pair: `node scripts/transfer.js --from=bot --to=base --amount=25` |
+| `scripts/hl.sh` | Hyperlane CLI wrapper — from the repo root: `./scripts/hl.sh <args>` |
+| `src/relayer.js` | 4-chain relayer (12 routes, full mesh) with a `[no-gas]` guard that pauses an unfunded destination |
+| `src/health.js` | status/watchdog: heartbeat, stuck messages, alerts, gas floors, cursor lag, collateral invariant |
+| `test/security_check.js` | `npm test` — read-only integrity/accounting checks for all wired chains |
+| `state/` | last-transfer records asserted by the test and the demo scripts |
 | `systemd/*.service` | unit files for the relayer + demo frontend (installed to `/etc/systemd/system/`) |
+
+**Layout note (reorganised 2026-09-16):** the repo root used to hold 31 flat files. Code now lives in
+`src/` (processes), `scripts/` (tooling, with one-off investigations under `scripts/diagnostics/`),
+`contracts/` (compiler + build output) and `test/`. Because every script pins
+`const ROOT = '/root/botchain-bridge'`, the files could move without changing what they resolve; the
+systemd unit's `ExecStart` and `package.json` scripts were updated to the new paths.
 
 ## Operations & stability (since 2026-09-16)
 
@@ -119,9 +127,9 @@ Both processes are **systemd services**, enabled at boot with `Restart=always`:
 
 ```bash
 systemctl status botchain-relayer botchain-frontend
-systemctl restart botchain-relayer            # after editing relayer.js
+systemctl restart botchain-relayer            # after editing src/relayer.js
 journalctl -u botchain-relayer -n 50 --no-pager
-node /root/botchain-bridge/health.js --verbose
+node /root/botchain-bridge/src/health.js --verbose
 ```
 
 Relayer hardening (details in the README table): per-chain confirmation depth (Base needs 6), RPC
@@ -183,7 +191,7 @@ warning instead of a failure storm.
 4. **Every new chain needs its own gas.** A remote chain that is a synthetic leg needs gas only — no
    USDT faucet. Base Sepolia cost ~0.0001 ETH for deploy + all wiring.
 5. **A testnet can be missing Hyperlane core entirely.** Arc testnet had none at any known address, so
-   core was deployed from the local registry (`./hl.sh core deploy --chain arctestnet -o configs/core-config-arctestnet.yaml -y`,
+   core was deployed from the local registry (`./scripts/hl.sh core deploy --chain arctestnet -o configs/core-config-arctestnet.yaml -y`,
    gas 0.5512121 USDC). Write `registry/chains/<name>/metadata.yaml` first — the CLI validates against
    its schema and needs `nativeToken` to be right (Arc's is **USDC, 18 decimals**, not ETH) and an
    `apiUrl`/`family` entry for the explorer.

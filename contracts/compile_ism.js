@@ -4,7 +4,7 @@ const CORE = '/root/botchain-bridge/node_modules/@hyperlane-xyz/core';
 const OZ = path.join(CORE, 'dependencies/@openzeppelin-contracts-4.9.3');
 
 // existing artifacts
-const art = JSON.parse(fs.readFileSync('/root/botchain-bridge/warp_artifacts.json', 'utf8'));
+const art = JSON.parse(fs.readFileSync('/root/botchain-bridge/contracts/warp_artifacts.json', 'utf8'));
 for (const [n, a] of Object.entries(art)) {
   const ctor = a.abi.find((x) => x.type === 'constructor');
   console.log(`${n} constructor:`, ctor ? JSON.stringify(ctor.inputs) : '(none)');
@@ -51,6 +51,6 @@ console.log('\nISM sources found:', cands.map((c) => c.replace(CORE + '/', '')))
       }
     }
   }
-  fs.writeFileSync('/root/botchain-bridge/warp_artifacts.json', JSON.stringify(art));
+  fs.writeFileSync('/root/botchain-bridge/contracts/warp_artifacts.json', JSON.stringify(art));
   console.log('\nartifacts now:', Object.keys(art).join(', '));
 })();

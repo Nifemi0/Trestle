@@ -1,8 +1,8 @@
 const fs = require('fs');
 const { ethers } = require('/root/copyentries/node_modules/ethers');
-const art = JSON.parse(fs.readFileSync('/root/botchain-bridge/warp_artifacts.json', 'utf8'));
+const art = JSON.parse(fs.readFileSync('/root/botchain-bridge/contracts/warp_artifacts.json', 'utf8'));
 const dep = JSON.parse(fs.readFileSync('/root/botchain-bridge/deployer.json', 'utf8'));
-const warp = JSON.parse(fs.readFileSync('/root/botchain-bridge/warp_deployments.json', 'utf8'));
+const warp = JSON.parse(fs.readFileSync('/root/botchain-bridge/contracts/warp_deployments.json', 'utf8'));
 
 const botP = new ethers.JsonRpcProvider('https://rpc.bohr.life', undefined, { staticNetwork: true });
 const arbP = new ethers.JsonRpcProvider('https://sepolia-rollup.arbitrum.io/rpc', undefined, { staticNetwork: true });

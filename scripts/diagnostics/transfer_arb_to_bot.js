@@ -1,9 +1,9 @@
 // Stage 3: reverse direction — Arbitrum Sepolia -> BOT Chain testnet (burn on Arb, release on BOT).
 const fs = require('fs');
 const { ethers } = require('/root/copyentries/node_modules/ethers');
-const art = JSON.parse(fs.readFileSync('/root/botchain-bridge/warp_artifacts.json', 'utf8'));
+const art = JSON.parse(fs.readFileSync('/root/botchain-bridge/contracts/warp_artifacts.json', 'utf8'));
 const dep = JSON.parse(fs.readFileSync('/root/botchain-bridge/deployer.json', 'utf8'));
-const warp = JSON.parse(fs.readFileSync('/root/botchain-bridge/warp_deployments.json', 'utf8'));
+const warp = JSON.parse(fs.readFileSync('/root/botchain-bridge/contracts/warp_deployments.json', 'utf8'));
 
 const BOT = { rpc: 'https://rpc.bohr.life', mailbox: '0xC2E414899C49ff4C95c639aA6bca6B1f2799bF1B',
               usdt: '0x75edC9335175Fc0552D51D48439F229c10420fe3', domain: 968, explorer: 'https://scan.bohr.life/tx/' };
@@ -52,5 +52,5 @@ const MAILBOX_ABI = ['function process(bytes _metadata, bytes _message) payable'
   console.log('\n=== RESULT ===');
   console.log('USDT on BOT:    ', ethers.formatUnits(u0, 6), '->', ethers.formatUnits(u1, 6), ` (${u1 - u0 >= 0n ? '+' : ''}${ethers.formatUnits(u1 - u0, 6)})`);
   console.log('botUSDT on Arb: ', ethers.formatUnits(s0, 6), '->', ethers.formatUnits(s1, 6), ` (${ethers.formatUnits(s1 - s0, 6)})`);
-  fs.writeFileSync('/root/botchain-bridge/last_transfer_reverse.json', JSON.stringify({ messageId, arbTx: tx.hash }, null, 2));
+  fs.writeFileSync('/root/botchain-bridge/state/last_transfer_reverse.json', JSON.stringify({ messageId, arbTx: tx.hash }, null, 2));
 })();

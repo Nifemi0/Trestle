@@ -1,12 +1,12 @@
 {
   "name": "botchain-bridge",
   "version": "1.0.0",
-  "description": "",
-  "main": "make_deployer.js",
+  "description": "Trestle — BOT Chain multichain USDT bridge (Hyperlane warp mesh)",
+  "main": "src/relayer.js",
   "scripts": {
-    "test": "node security_check.js",
-    "relayer": "node relayer.js",
-    "relayer:once": "node relayer.js --once"
+    "test": "node test/security_check.js",
+    "relayer": "node src/relayer.js",
+    "relayer:once": "node src/relayer.js --once"
   },
   "keywords": [],
   "author": "",

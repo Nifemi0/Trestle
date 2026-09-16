@@ -1,9 +1,9 @@
 // Final state of the BOT Chain testnet <-> Arbitrum Sepolia USDT warp route.
 const fs = require('fs');
 const { ethers } = require('/root/copyentries/node_modules/ethers');
-const art = JSON.parse(fs.readFileSync('/root/botchain-bridge/warp_artifacts.json', 'utf8'));
+const art = JSON.parse(fs.readFileSync('/root/botchain-bridge/contracts/warp_artifacts.json', 'utf8'));
 const dep = JSON.parse(fs.readFileSync('/root/botchain-bridge/deployer.json', 'utf8'));
-const warp = JSON.parse(fs.readFileSync('/root/botchain-bridge/warp_deployments.json', 'utf8'));
+const warp = JSON.parse(fs.readFileSync('/root/botchain-bridge/contracts/warp_deployments.json', 'utf8'));
 
 const BOT = { rpc: 'https://rpc.bohr.life', mailbox: '0xC2E414899C49ff4C95c639aA6bca6B1f2799bF1B',
               usdt: '0x75edC9335175Fc0552D51D48439F229c10420fe3', domain: 968 };
@@ -19,7 +19,7 @@ const ARB = { rpc: 'https://sepolia-rollup.arbitrum.io/rpc', mailbox: '0x598facE
   const synthetic = new ethers.Contract(warp.synthetic, art.HypERC20.abi, arbP);
   const arbMailbox = new ethers.Contract(ARB.mailbox, ['function delivered(bytes32) view returns (bool)'], arbP);
 
-  const t = JSON.parse(fs.readFileSync('/root/botchain-bridge/last_transfer.json', 'utf8'));
+  const t = JSON.parse(fs.readFileSync('/root/botchain-bridge/state/last_transfer.json', 'utf8'));
 
   console.log('===== WARP ROUTE STATE =====');
   console.log('deployer                 :', dep.address);

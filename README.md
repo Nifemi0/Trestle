@@ -31,7 +31,7 @@ not cover (Arbitrum, Polygon, Base, Optimism, Avalanche, …).
 | Warp route USDT (BOT ↔ Arbitrum Sepolia) | ✅ **LIVE** — deployed + enrolled both directions |
 | Third chain: Base Sepolia (84532) | ✅ **LIVE** — ISM + synthetic deployed, 3-way wiring, all 6 directions proven |
 | Fourth chain: Arc Testnet (5042002) | ✅ **LIVE** — Hyperlane core deployed by us, synthetic + ISM, full mesh with BOT/Arb/Base |
-| Read-only route/security verification | ✅ `node security_check.js` — all integrity and accounting checks pass |
+| Read-only route/security verification | ✅ `npm test` — all integrity and accounting checks pass |
 
 ## Warp routes — WORKING (BOT testnet ↔ Arbitrum Sepolia ↔ Base Sepolia ↔ Arc Testnet)
 
@@ -109,7 +109,7 @@ deployer's gas and the bridge collateral are the same asset.
 
 ```bash
 HYP_KEY=$(node -e "console.log(require('./deployer.json').privateKey)") \
-  ./hl.sh core deploy --chain arctestnet --registry /root/botchain-bridge/registry \
+  ./scripts/hl.sh core deploy --chain arctestnet --registry /root/botchain-bridge/registry \
     -o configs/core-config-arctestnet.yaml -y
 # gas: 0.5512121 USDC
 ```
@@ -131,7 +131,7 @@ HYP_KEY=$(node -e "console.log(require('./deployer.json').privateKey)") \
 | Base → Arc | 5 botUSDT | delivered, `mailbox.delivered = true` |
 
 Wiring is a **full mesh**: Arc ↔ BOT, Arc ↔ Arbitrum, Arc ↔ Base, both directions, all verified by
-`security_check.js`.
+`test/security_check.js`.
 
 ## Stability & operations (testnet)
 
@@ -139,10 +139,10 @@ The relayer and the demo frontend run as **systemd services** — enabled at boo
 
 ```bash
 systemctl status botchain-relayer botchain-frontend      # state
-systemctl restart botchain-relayer                       # after editing relayer.js
+systemctl restart botchain-relayer                       # after editing src/relayer.js
 journalctl -u botchain-relayer -n 50 --no-pager          # service log
 tail -f /root/botchain-bridge/logs/relayer.log           # relayer's own log
-node /root/botchain-bridge/health.js --verbose           # full status
+node /root/botchain-bridge/src/health.js --verbose           # full status
 ```
 
 Units live in `systemd/` in this repo and are copied to `/etc/systemd/system/`.
@@ -175,22 +175,42 @@ Arc testnet has only one public RPC (no failover possible); no per-transfer valu
 `TrustedRelayerIsm`, i.e. whoever holds that key can mint on the remote chains.
 
 
+## Repository layout
+
+```
+├── contracts/     compile the Hyperlane warp + ISM contracts, plus their build output
+├── src/           the two long-running processes: the relayer and the health watchdog
+├── scripts/       deployment + transfer tooling, run on demand
+│   └── diagnostics/  one-off investigation scripts (balances, gas, tx inspection, demo proof)
+├── test/          `npm test` — read-only chain / wiring / accounting assertions
+├── state/         last-transfer records the test and demo scripts assert against
+├── frontend/      the Trestle demo UI (static page + /api/status) served on :8088
+├── configs/       Hyperlane core + warp-route configs used at deploy time
+├── registry/      local Hyperlane registry (chain metadata + addresses)
+└── systemd/       unit files for the relayer and the frontend
+```
+
+Every script pins `const ROOT = '/root/botchain-bridge'` and resolves its inputs through it, so
+scripts can be invoked from any working directory. Runtime-only files (deployer wallet, relayer
+state/heartbeat, logs, env files) stay gitignored at the repo root.
+
 ## Scripts
 
 | File | Purpose |
 |---|---|
-| `compile_warp.js` / `compile_ism.js` | compile Hyperlane warp + ISM contracts from vendored sources |
-| `deploy_warp.js` | deploy both routers, set ISM, enroll remote routers |
-| `add_chain.js` | add a chain to the route: `--preflight` / `--deploy`, `--target=base\|op\|amoy` |
-| `resume_chain.js` | idempotent re-wire (only missing ISM/enrollment txs, explicit gas limits) |
-| `transfer.js` | end-to-end transfer any pair: `--from=bot --to=base --amount=25`, waits for delivery |
-| `security_check.js` | `npm test` — read-only checks incl. every wired chain and the collateral invariant |
-| `transfer_bot_to_arb.js` / `transfer_arb_to_bot.js` | live transfers + relay |
-| `relay_bot_to_arb.js` | resumable relay using the saved message |
-| `final_state.js` / `verify_core.js` | on-chain verification |
-| `relayer.js` | automatic two-way Dispatch scanner and Mailbox processor |
-| `security_check.js` | read-only chain, wiring, delivery, privilege, and accounting assertions |
-| `warp_deployments.json` / `warp_artifacts.json` | deployed addresses + compiled ABI/bytecode |
+| `contracts/compile_warp.js` / `contracts/compile_ism.js` | compile Hyperlane warp + ISM contracts from vendored sources |
+| `contracts/warp_artifacts.json` / `contracts/warp_deployments.json` | compiled ABI/bytecode + deployed addresses |
+| `scripts/deploy_warp.js` | deploy both routers, set ISM, enroll remote routers |
+| `scripts/add_chain.js` | add a chain to the route: `--preflight` / `--deploy`, `--target=base\|op\|amoy` |
+| `scripts/resume_chain.js` | idempotent re-wire (only missing ISM/enrollment txs, explicit gas limits) |
+| `scripts/transfer.js` | end-to-end transfer any pair: `--from=bot --to=base --amount=25`, waits for delivery |
+| `scripts/make_deployer.js` | generate the testnet deployer wallet |
+| `scripts/hl.sh` | Hyperlane CLI wrapper — run from the repo root: `./scripts/hl.sh <args>` |
+| `src/relayer.js` | automatic Dispatch scanner and Mailbox processor (4 chains, 12 routes) |
+| `src/health.js` | status/watchdog: heartbeat, stuck messages, alerts, gas floors, collateral invariant |
+| `test/security_check.js` | `npm test` — read-only chain, wiring, delivery, privilege and accounting assertions |
+| `scripts/diagnostics/*` | one-off tooling: balance/gas checks, tx inspection, demo proof, legacy single-pair transfers |
+| `systemd/*.service` | unit files for the relayer + demo frontend (installed to `/etc/systemd/system/`) |
 
 ## Deployed addresses — BOT Chain testnet (968)
 
@@ -242,7 +262,7 @@ Chosen demo pair: **BOT Chain testnet ↔ Arbitrum Sepolia**.
 ```bash
 # the .bin shim trips the agent command guard — call the bundle via node
 alias hl='node /root/botchain-bridge/node_modules/@hyperlane-xyz/cli/bundle/index.js'
-# or: ./hl.sh <args>
+# or: ./scripts/hl.sh <args>
 
 # 1. check deployer gas
 #    (faucet: https://faucet.botchain.ai/basic)
@@ -250,7 +270,7 @@ node -e "const{ethers}=require('/root/copyentries/node_modules/ethers');const p=
 
 # 2. deploy Hyperlane core on BOT Chain testnet
 HYP_KEY=$(node -e "console.log(require('./deployer.json').privateKey)") \
-  ./hl.sh core deploy --chain botchaintestnet --registry /root/botchain-bridge/registry \
+  ./scripts/hl.sh core deploy --chain botchaintestnet --registry /root/botchain-bridge/registry \
     -o configs/core-config.yaml -y
 ```
 

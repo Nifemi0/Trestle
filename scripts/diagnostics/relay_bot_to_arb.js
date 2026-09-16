@@ -1,9 +1,9 @@
 // Relay the already-dispatched message from the BOT->Arb transfer, then verify balances.
 const fs = require('fs');
 const { ethers } = require('/root/copyentries/node_modules/ethers');
-const art = JSON.parse(fs.readFileSync('/root/botchain-bridge/warp_artifacts.json', 'utf8'));
+const art = JSON.parse(fs.readFileSync('/root/botchain-bridge/contracts/warp_artifacts.json', 'utf8'));
 const dep = JSON.parse(fs.readFileSync('/root/botchain-bridge/deployer.json', 'utf8'));
-const warp = JSON.parse(fs.readFileSync('/root/botchain-bridge/warp_deployments.json', 'utf8'));
+const warp = JSON.parse(fs.readFileSync('/root/botchain-bridge/contracts/warp_deployments.json', 'utf8'));
 
 const TX = '0xd8130dd5e7c31919f2aafdcf4773af2f5e72c86fa3a0205d83875687f20d3043';
 const BOT = { rpc: 'https://rpc.bohr.life', mailbox: '0xC2E414899C49ff4C95c639aA6bca6B1f2799bF1B',
@@ -52,5 +52,5 @@ const MAILBOX_ABI = [
   console.log('USDT still on BOT  :', ethers.formatUnits(await botUsdt.balanceOf(dep.address), 6), '(was 1000, 100 locked)');
   console.log('botUSDT on Arb     :', ethers.formatUnits(before, 6), '->', ethers.formatUnits(after, 6));
   console.log('delta              :', ethers.formatUnits(after - before, 6));
-  fs.writeFileSync('/root/botchain-bridge/last_transfer.json', JSON.stringify({ messageId, message, relayTx: tx.hash, sourceTx: TX }, null, 2));
+  fs.writeFileSync('/root/botchain-bridge/state/last_transfer.json', JSON.stringify({ messageId, message, relayTx: tx.hash, sourceTx: TX }, null, 2));
 })();

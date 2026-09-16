@@ -1,10 +1,10 @@
 // Read-only security and route-integrity checks for the testnet demo.
 const fs = require('fs');
 const { ethers } = require('/root/copyentries/node_modules/ethers');
-const art = JSON.parse(fs.readFileSync('/root/botchain-bridge/warp_artifacts.json', 'utf8'));
+const art = JSON.parse(fs.readFileSync('/root/botchain-bridge/contracts/warp_artifacts.json', 'utf8'));
 const dep = JSON.parse(fs.readFileSync('/root/botchain-bridge/deployer.json', 'utf8'));
-const warp = JSON.parse(fs.readFileSync('/root/botchain-bridge/warp_deployments.json', 'utf8'));
-const reverse = JSON.parse(fs.readFileSync('/root/botchain-bridge/last_transfer_reverse.json', 'utf8'));
+const warp = JSON.parse(fs.readFileSync('/root/botchain-bridge/contracts/warp_deployments.json', 'utf8'));
+const reverse = JSON.parse(fs.readFileSync('/root/botchain-bridge/state/last_transfer_reverse.json', 'utf8'));
 
 const BOT = {
   rpc: 'https://rpc.bohr.life', chainId: 968, domain: 968,
@@ -75,7 +75,7 @@ const eq = (a, b) => String(a).toLowerCase() === String(b).toLowerCase();
   // a third/fourth chain held synthetic supply (Arc: 5 botUSDT) while BOT held 158 USDT locked.
   // Every leg's supply is summed in the loop below and asserted once, after all legs are read.
   const legs = [{ name: 'Arbitrum', supply: minted }];
-  const forward = JSON.parse(fs.readFileSync('/root/botchain-bridge/last_transfer.json'));
+  const forward = JSON.parse(fs.readFileSync('/root/botchain-bridge/state/last_transfer.json'));
   check('BOT→Arbitrum message delivered', await arbMailbox.delivered(ethers.keccak256(forward.message)), 'destination delivered');
   check('Arbitrum→BOT message delivered', await botMailbox.delivered(reverse.messageId), 'destination delivered');
 

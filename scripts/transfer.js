@@ -8,9 +8,9 @@
 const fs = require('fs');
 const { ethers } = require('/root/copyentries/node_modules/ethers');
 const ROOT = '/root/botchain-bridge';
-const art = JSON.parse(fs.readFileSync(`${ROOT}/warp_artifacts.json`, 'utf8'));
+const art = JSON.parse(fs.readFileSync(`${ROOT}/contracts/warp_artifacts.json`, 'utf8'));
 const dep = JSON.parse(fs.readFileSync(`${ROOT}/deployer.json`, 'utf8'));
-const warp = JSON.parse(fs.readFileSync(`${ROOT}/warp_deployments.json`, 'utf8'));
+const warp = JSON.parse(fs.readFileSync(`${ROOT}/contracts/warp_deployments.json`, 'utf8'));
 
 const arg = (name, dflt) => (process.argv.find((a) => a.startsWith(`--${name}=`)) || `--${name}=${dflt}`).split('=')[1];
 const FROM = arg('from', 'bot'), TO = arg('to', 'base'), AMOUNT = arg('amount', '25');

@@ -6,7 +6,7 @@
 # Added via add_chain.js (deploys + enrolls); this file is the declarative mirror of the
 # on-chain state and the input for a future `hyperlane warp deploy`.
 #
-# Run:  ./hl.sh warp deploy --config configs/warp-route-usdt.yaml -y
+# Run:  ./scripts/hl.sh warp deploy --config configs/warp-route-usdt.yaml -y
 ---
 botchaintestnet:
   type: collateral

@@ -1,9 +1,9 @@
 // Stage 2: live transfer BOT testnet -> Arbitrum Sepolia, relay the Hyperlane message, verify.
 const fs = require('fs');
 const { ethers } = require('/root/copyentries/node_modules/ethers');
-const art = JSON.parse(fs.readFileSync('/root/botchain-bridge/warp_artifacts.json', 'utf8'));
+const art = JSON.parse(fs.readFileSync('/root/botchain-bridge/contracts/warp_artifacts.json', 'utf8'));
 const dep = JSON.parse(fs.readFileSync('/root/botchain-bridge/deployer.json', 'utf8'));
-const warp = JSON.parse(fs.readFileSync('/root/botchain-bridge/warp_deployments.json', 'utf8'));
+const warp = JSON.parse(fs.readFileSync('/root/botchain-bridge/contracts/warp_deployments.json', 'utf8'));
 
 const BOT = { rpc: 'https://rpc.bohr.life', mailbox: '0xC2E414899C49ff4C95c639aA6bca6B1f2799bF1B',
               usdt: '0x75edC9335175Fc0552D51D48439F229c10420fe3', domain: 968, explorer: 'https://scan.bohr.life/tx/' };
@@ -71,5 +71,5 @@ const MAILBOX_ABI = [
   console.log('botUSDT on Arb before:  ', ethers.formatUnits(beforeArb, 6));
   console.log('botUSDT on Arb after:   ', ethers.formatUnits(afterArb, 6));
   console.log('delta on Arbitrum:      ', ethers.formatUnits(afterArb - beforeArb, 6));
-  fs.writeFileSync('/root/botchain-bridge/last_transfer.json', JSON.stringify({ messageId, message, hash: tx.hash }, null, 2));
+  fs.writeFileSync('/root/botchain-bridge/state/last_transfer.json', JSON.stringify({ messageId, message, hash: tx.hash }, null, 2));
 })();

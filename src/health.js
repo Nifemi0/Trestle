@@ -16,7 +16,7 @@ const STALE_MS = Number(process.env.HEALTH_STALE_MS || 120000);      // relayer 
 const STUCK_MIN = Number(process.env.RELAYER_STUCK_MINUTES || 20);
 const LAG_WARN = Number(process.env.HEALTH_LAG_BLOCKS || 5000);
 
-const warp = JSON.parse(fs.readFileSync(path.join(ROOT, 'warp_deployments.json'), 'utf8'));
+const warp = JSON.parse(fs.readFileSync(path.join(ROOT, 'contracts/warp_deployments.json'), 'utf8'));
 
 // minimum gas we want the relayer/deployer to keep on each chain (native units, decimal string)
 const CHAINS = {
@@ -39,7 +39,7 @@ const add = (list, msg) => list.push(msg);
 
   // 1. relayer process + heartbeat
   let running = false;
-  try { running = execSync('pgrep -f "node /root/botchain-bridge/relayer.js" || true').toString().trim() !== ''; } catch {}
+  try { running = execSync('pgrep -f "node /root/botchain-bridge/src/relayer.js" || true').toString().trim() !== ''; } catch {}
   if (!running) add(problems, 'relayer: NOT RUNNING (systemctl status botchain-relayer)');
   else add(ok, 'relayer: running');
 

@@ -3,7 +3,7 @@
 //   Arbitrum Sepolia (421614)    -> HypERC20 (synthetic) + TrustedRelayerIsm
 const fs = require('fs');
 const { ethers } = require('/root/copyentries/node_modules/ethers');
-const art = JSON.parse(fs.readFileSync('/root/botchain-bridge/warp_artifacts.json', 'utf8'));
+const art = JSON.parse(fs.readFileSync('/root/botchain-bridge/contracts/warp_artifacts.json', 'utf8'));
 const dep = JSON.parse(fs.readFileSync('/root/botchain-bridge/deployer.json', 'utf8'));
 
 const BOT = { name: 'botchaintestnet', chainId: 968, domain: 968, rpc: 'https://rpc.bohr.life',
@@ -13,7 +13,7 @@ const ARB = { name: 'arbitrumsepolia', chainId: 421614, domain: 421614, rpc: 'ht
               mailbox: '0x598facE78a4302f11E3de0bee1894Da0b2Cb71F8', explorer: 'https://sepolia.arbiscan.io/tx/' };
 
 const out = { bot: {}, arb: {} };
-const save = () => fs.writeFileSync('/root/botchain-bridge/warp_deployments.json', JSON.stringify(out, null, 2));
+const save = () => fs.writeFileSync('/root/botchain-bridge/contracts/warp_deployments.json', JSON.stringify(out, null, 2));
 
 (async () => {
   const botP = new ethers.JsonRpcProvider(BOT.rpc, undefined, { staticNetwork: true });

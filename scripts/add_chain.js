@@ -10,9 +10,9 @@ const fs = require('fs');
 const { ethers } = require('/root/copyentries/node_modules/ethers');
 
 const ROOT = '/root/botchain-bridge';
-const art = JSON.parse(fs.readFileSync(`${ROOT}/warp_artifacts.json`, 'utf8'));
+const art = JSON.parse(fs.readFileSync(`${ROOT}/contracts/warp_artifacts.json`, 'utf8'));
 const dep = JSON.parse(fs.readFileSync(`${ROOT}/deployer.json`, 'utf8'));
-const warpPath = `${ROOT}/warp_deployments.json`;
+const warpPath = `${ROOT}/contracts/warp_deployments.json`;
 const warp = JSON.parse(fs.readFileSync(warpPath, 'utf8'));
 
 const EXISTING = {

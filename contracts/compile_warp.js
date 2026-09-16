@@ -55,7 +55,7 @@ async function main() {
       }
     }
   }
-  fs.writeFileSync('/root/botchain-bridge/warp_artifacts.json', JSON.stringify(save));
-  console.log('saved -> /root/botchain-bridge/warp_artifacts.json');
+  fs.writeFileSync('/root/botchain-bridge/contracts/warp_artifacts.json', JSON.stringify(save));
+  console.log('saved -> /root/botchain-bridge/contracts/warp_artifacts.json');
 }
 main();

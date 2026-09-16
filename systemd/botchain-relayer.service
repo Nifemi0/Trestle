@@ -9,7 +9,7 @@ Type=simple
 WorkingDirectory=/root/botchain-bridge
 # optional: TG_TOKEN=..., TG_CHAT=..., RELAYER_ROUTES=..., RELAYER_POLL_MS=...
 EnvironmentFile=-/root/botchain-bridge/relayer.env
-ExecStart=/usr/bin/node /root/botchain-bridge/relayer.js
+ExecStart=/usr/bin/node /root/botchain-bridge/src/relayer.js
 Restart=always
 RestartSec=5
 TimeoutStopSec=20
