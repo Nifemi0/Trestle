@@ -88,6 +88,33 @@ Nothing was created or destroyed: base supply went 0 → 25 → 0 and arb 153 �
 | `transfer.js` | end-to-end transfer any pair: `node transfer.js --from=bot --to=base --amount=25` |
 | `security_check.js` | `npm test` — read-only integrity/accounting checks for all wired chains |
 | `relayer.js` | 4-chain relayer (12 routes, full mesh) with a `[no-gas]` guard that pauses an unfunded destination |
+| `health.js` | status/watchdog: heartbeat, stuck messages, alerts, gas floors, cursor lag, collateral invariant |
+| `systemd/*.service` | unit files for the relayer + demo frontend (installed to `/etc/systemd/system/`) |
+
+## Operations & stability (since 2026-09-16)
+
+Both processes are **systemd services**, enabled at boot with `Restart=always`:
+
+```bash
+systemctl status botchain-relayer botchain-frontend
+systemctl restart botchain-relayer            # after editing relayer.js
+journalctl -u botchain-relayer -n 50 --no-pager
+node /root/botchain-bridge/health.js --verbose
+```
+
+Relayer hardening (details in the README table): per-chain confirmation depth (Base needs 6), RPC
+failover lists, retry/backoff per call, a persisted **pending-message ledger** that alerts when a
+dispatch stays undelivered > 20 min, one-shot no-gas alerts, and a `relayer_health.json` heartbeat.
+
+A Hermes cron job (`botchain-bridge-health`, every 15 min) runs `health.js` and stays **silent
+unless something is wrong**, so failures reach chat without anyone watching logs.
+
+Verified 2026-09-16: live BOT→Base→BOT round trip delivered under systemd; `kill -9` on the relayer
+auto-restarted in ~12s (`NRestarts=1`) with a fresh heartbeat; accounting exact (locked 158 == minted 158).
+
+The repo is now under **git** (local only, no remote): `deployer.key`, `deployer.json`, `relayer.env`,
+`relayer_state.json`, logs and `node_modules` are gitignored. Do not add a remote until the keys are
+rotated/isolated.
 
 ## Automatic relayer
 

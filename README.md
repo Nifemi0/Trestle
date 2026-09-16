@@ -133,6 +133,47 @@ HYP_KEY=$(node -e "console.log(require('./deployer.json').privateKey)") \
 Wiring is a **full mesh**: Arc ↔ BOT, Arc ↔ Arbitrum, Arc ↔ Base, both directions, all verified by
 `security_check.js`.
 
+## Stability & operations (testnet)
+
+The relayer and the demo frontend run as **systemd services** — enabled at boot, auto-restart on crash:
+
+```bash
+systemctl status botchain-relayer botchain-frontend      # state
+systemctl restart botchain-relayer                       # after editing relayer.js
+journalctl -u botchain-relayer -n 50 --no-pager          # service log
+tail -f /root/botchain-bridge/logs/relayer.log           # relayer's own log
+node /root/botchain-bridge/health.js --verbose           # full status
+```
+
+Units live in `systemd/` in this repo and are copied to `/etc/systemd/system/`.
+
+Hardening in `relayer.js`:
+
+| Property | Why it matters |
+|---|---|
+| **Per-chain confirmation depth** (`bot=3 arb=3 base=6 arc=3`, ≥ each chain's `reorgPeriod`) | Base reorgs deeper than the rest; delivering at 3 confirmations there was a correctness bug |
+| **RPC failover lists per chain** (`rpcs: [...]`), auto-rotate on error | one dead/rate-limited endpoint no longer stalls a route |
+| **Retry + backoff per RPC call**, isolated per route | a bad chain can't kill the loop |
+| **Persisted pending-message ledger** (`state.pending`) | a message dispatched-but-undelivered after 20 min raises an alert instead of failing silently |
+| **`[no-gas]` guard → single alert** | an unfunded destination pauses one route instead of spamming errors |
+| **`relayer_health.json` heartbeat each loop** | what `health.js` and the watchdog read |
+| **Alerts** → `alerts.log` always, Telegram too if `TG_TOKEN`/`TG_CHAT` are set in `relayer.env` | nobody has to watch a log file |
+
+`health.js` checks: relayer process + heartbeat freshness, stuck messages, last-24h alerts,
+per-chain gas floors, cursor lag vs head, and the **collateral invariant** (locked USDT ==
+sum of synthetic supplies). It prints nothing when healthy — that is what makes the watchdog silent.
+
+Watchdog: a Hermes cron job (`botchain-bridge-health`, every 15 min, script
+`~/.hermes/scripts/botchain-health.sh`) delivers a report **only when something is wrong**.
+
+Verified on 2026-09-16: a live BOT→Base→BOT round trip delivered under the systemd relayer;
+`kill -9` on the relayer was followed by an automatic restart (NRestarts=1) and a fresh heartbeat;
+accounting stayed exact (locked 158 == minted 158).
+
+Known single points of failure (honest list, testnet scope): one key is both `owner` and relayer;
+Arc testnet has only one public RPC (no failover possible); no per-transfer value caps; the ISM is
+`TrustedRelayerIsm`, i.e. whoever holds that key can mint on the remote chains.
+
 
 ## Scripts
 
