@@ -1,4 +1,4 @@
-// Relayline — 4-chain USDT bridge UI (BOT testnet ↔ Arbitrum / Base / Arc Sepolia-testnets).
+// Trestle — 4-chain USDT bridge UI (BOT testnet ↔ Arbitrum / Base / Arc Sepolia-testnets).
 // Any-to-any through the Hyperlane warp mesh: every chain below is enrolled with every other.
 const { ethers } = window;
 
@@ -45,7 +45,7 @@ const button = $('connect'), notice = $('notice'), balance = $('balance'),
 
 const source = () => CONFIG[fromKey];
 const destination = () => CONFIG[toKey];
-function say(text, error = false) { notice.textContent = text; notice.style.color = error ? '#f09bad' : '#968e89'; }
+function say(text, error = false) { notice.textContent = text; notice.style.color = error ? '#ff6b5a' : '#a5a69f'; }
 
 function fillSelect(sel, options, selected) {
   sel.innerHTML = options
@@ -279,3 +279,4 @@ if (window.ethereum) {
 }
 
 window.__relayline = { CONFIG, CHAIN_ORDER, availableDestinations, getRoute: () => ({ from: fromKey, to: toKey }) };
+window.__trestle = window.__relayline;   // landing.js reads the chain table from here

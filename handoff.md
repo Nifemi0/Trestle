@@ -1,18 +1,38 @@
 # BOT Chain Bridge — Handoff
 
-Updated: 2026-09-15 (Arc added)
+Updated: 2026-09-16 (4-chain UI shipped + renamed **Trestle**)
 
 ## Current milestone
 
-**Four chains wired and proven end-to-end:**
+**Four chains wired and proven end-to-end, and the front end now covers all of them:**
 
 - BOT Chain testnet (968) ↔ Arbitrum Sepolia (421614) ↔ Base Sepolia (84532) ↔ **Arc Testnet (5042002)**
 - Hyperlane Mailboxes live on all four; BOT + Arc core deployed by us, Arb/Base use canonical core
 - BOT-side `HypERC20Collateral` locks BOT testnet USDT; Arb/Base/Arc legs are synthetic `botUSDT`
 - Wiring is a **full mesh** — every ordered pair is enrolled both directions
 - Automatic relayer runs 4 chains / 12 routes (restrict with `RELAYER_ROUTES="bot<>arc,..."`)
-- `npm test` (`security_check.js`) = **PASS**, including the third-chain assertions
-- Frontend still serves on port 8088 — **still 2-chain** (see Next build step)
+- `npm test` (`security_check.js`) = **PASS**. The collateral-invariant check was stale (it compared
+  locked collateral against the Arbitrum leg alone, so it failed by construction once Arc held 5
+  botUSDT); it now sums every synthetic leg, and prints
+  `158.0 locked vs 158.0 minted (Arbitrum 153.0 + Base Sepolia 0.0 + Arc Testnet 5.0)`.
+- Frontend is 4-chain: FROM/TO selectors over BOT/Arbitrum/Base/Arc, 12 routes, 24/24 headless checks
+
+## Front end (branded **Trestle**)
+
+Name: **Trestle** — a trestle is a bridge type; `trestle.io` was free when the rename was made.
+Branding is front-end only: contracts, relayer and scripts are untouched, and the route logic in
+`app.js` only had two hex colours and one alias line changed.
+
+Design direction (from a supplied reference): **acid chartreuse on near-black**, one accent used
+for keylines and outlines rather than fills, condensed grotesk headings, expanded outlined wordmark,
+mono for every on-chain value. Page structure: hero (canvas point-lattice terrain) → bridge card +
+facts rail → 01–04 settlement steps → twelve-route matrix → live feed → footer.
+
+```bash
+node frontend/logic_test.js                 # 24 checks, no browser needed -> ALL CHECKS PASSED
+systemctl restart botchain-frontend         # port 8088
+curl -s localhost:8088/api/status
+```
 
 ## Live frontend
 
@@ -20,15 +40,17 @@ URL: http://104.252.77.136:8088
 
 Frontend directory: `/root/botchain-bridge/frontend/`
 
-- `index.html` — bridge UI
-- `styles.css` — burgundy / charcoal responsive styling
+- `index.html` — bridge UI markup (hero, bridge card, steps, route matrix, activity, footer)
+- `styles.css` — design tokens + layout (single accent, keyline cards, mobile-first breakpoints)
+- `mesh.js` — hero point-lattice terrain canvas (capped lattice, ~20fps, pauses off-screen, reduced-motion safe)
+- `landing.js` — route matrix, facts rail, relayer heartbeat, scroll reveals
 - `app.js` — wallet connection, network switching, balances, forward/reverse transfers, status polling
-- `server.py` — static server plus `/api/status`
+- `logic_test.js` — headless VM test of the routing logic (24 checks)
+- `server.py` — static server plus `/api/status` (route label + per-destination explorer links)
 
-Known gap: the UI is a **boolean flip between BOT and Arbitrum**; Base is wired on-chain but not
-selectable in the UI yet. Base's canonical Mailbox also carries a required-hook config, so outbound
-txs from Base should quote dispatch first — `transfer.js` already attempts `quoteDispatch` and falls
-back to no value (which worked on Base Sepolia).
+Known gap: `app.js` still reads/writes the old `relayline_*` localStorage keys and keeps the
+`window.__relayline` global alongside `window.__trestle`; harmless, but delete them once no
+deployed page depends on them.
 
 ## Bridge contracts
 
@@ -177,10 +199,15 @@ Before real funds:
 
 ## Next build step
 
-1. **Frontend: replace the BOT↔Arb flip with a 4-way route selector** (BOT / Arbitrum / Base / Arc) and
-   handle outbound gas quotes on the non-BOT legs.
-2. Add chains 5 and 6 with `add_chain.js --target=op` / `--target=amoy` once their gas is funded.
-3. Keep AI/privacy positioning modular until BOT Chain announces the next hackathon theme.
+1. Publish the repo (keys stripped: `deployer.key`, `deployer.json`, `relayer.env`) and adapt the
+   positioning to the next BOT Chain hackathon theme.
+2. Add chains 5 and 6 with `add_chain.js --target=op` / `--target=amoy` once their gas is funded —
+   the UI route matrix picks them up automatically from `CONFIG`, no markup change needed.
+3. Optional: drop the `relayline_*` localStorage keys and the `window.__relayline` alias once the
+   rename has settled.
+4. Decide the grant/positioning story: BOT Chain's official bridge covers only BOT/BNB/TRON/ETH, and
+   no mainstream interop (LayerZero/Wormhole/Axelar/CCTP/CCIP/deBridge/LI.FI) supports BOT Chain — the
+   mesh-coverage angle is the differentiator, and the UI now shows it as twelve live routes.
 
 ## Important operating note
 

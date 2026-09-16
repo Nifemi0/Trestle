@@ -274,9 +274,43 @@ key or `TrustedRelayerIsm` for production funds. Mainnet requires a validator /
 multisig ISM, proper key isolation, gas funding, rate limits, monitoring, and an
 audit.
 
+## Front end — **Trestle**
+
+The demo bridge is branded **Trestle** (`trestle.io` was free at time of writing) — a
+trestle is a bridge type, which is exactly what the product is. Branding is front-end only:
+contracts, relayer and scripts are unchanged.
+
+Design direction: **acid chartreuse on near-black** — one accent used for keylines and
+outlines rather than fills, condensed grotesk headings, an expanded outlined wordmark, and
+mono for every on-chain value. The hero runs a chartreuse point-lattice terrain drawn on a
+canvas; the page structure follows hero → bridge card + facts rail → 01–04 settlement steps
+→ twelve-route matrix → live feed.
+
+```bash
+systemctl status botchain-frontend      # port 8088
+curl -s localhost:8088/api/status
+```
+
+| File | Purpose |
+|---|---|
+| `frontend/index.html` | page structure |
+| `frontend/styles.css` | design tokens + layout (single accent, keyline cards) |
+| `frontend/app.js` | wallet, route selection, balances, transfer + status steps (**unchanged logic**) |
+| `frontend/mesh.js` | hero point-lattice terrain (canvas; ~20fps, pauses off-screen, honours reduced-motion) |
+| `frontend/landing.js` | twelve-route matrix, facts rail, relayer heartbeat, scroll reveals |
+| `frontend/logic_test.js` | headless logic test — `node frontend/logic_test.js` (24 checks, no browser) |
+| `frontend/server.py` | static server + `/api/status` (per-destination explorer links) |
+
+Route logic is verified headlessly, so a CSS/markup change cannot silently break the bridge:
+
+```bash
+node frontend/logic_test.js        # ALL CHECKS PASSED
+```
+
 ## Files
 
 - `registry/chains/botchaintestnet/metadata.yaml` — chain metadata for the local registry
 - `configs/core-config.yaml` — core deploy config (trustedRelayerIsm for the testnet demo)
 - `deployer.key` / `deployer.json` — deployer wallet (mode 600, testnet only)
 - `hl.sh` — CLI wrapper (node bundle invocation)
+- `frontend/` — the **Trestle** demo UI (see the section above)

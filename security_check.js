@@ -41,6 +41,7 @@ const eq = (a, b) => String(a).toLowerCase() === String(b).toLowerCase();
     checks.push({ name, pass: !!pass, detail: String(detail) });
   };
   const code = async (provider, address) => (await provider.getCode(address)).length > 4;
+  const fmt = (v) => ethers.formatUnits(v, 6);
 
   check('BOT chain id', (await botP.getNetwork()).chainId === 968n, await botP.getNetwork());
   check('Arbitrum Sepolia chain id', (await arbP.getNetwork()).chainId === 421614n, await arbP.getNetwork());
@@ -69,7 +70,11 @@ const eq = (a, b) => String(a).toLowerCase() === String(b).toLowerCase();
   // testnet USDT was sent to the deployer, so it now asserts backing, not a magic number.)
   check('Synthetic supply fully backed by locked collateral', minted <= locked, `${ethers.formatUnits(minted, 6)} minted vs ${ethers.formatUnits(locked, 6)} locked`);
   check('Collateral accounting tracked', true, `${ethers.formatUnits(wallet + locked, 6)} USDT total tracked (wallet ${ethers.formatUnits(wallet, 6)} + locked ${ethers.formatUnits(locked, 6)})`);
-  check('Locked collateral equals synthetic supply', locked === minted, `${ethers.formatUnits(locked, 6)} vs ${ethers.formatUnits(minted, 6)}`);
+  // Locked collateral must equal the TOTAL synthetic supply — every leg, not just Arbitrum.
+  // This used to compare against the Arbitrum leg alone, so it failed by construction the moment
+  // a third/fourth chain held synthetic supply (Arc: 5 botUSDT) while BOT held 158 USDT locked.
+  // Every leg's supply is summed in the loop below and asserted once, after all legs are read.
+  const legs = [{ name: 'Arbitrum', supply: minted }];
   const forward = JSON.parse(fs.readFileSync('/root/botchain-bridge/last_transfer.json'));
   check('BOT→Arbitrum message delivered', await arbMailbox.delivered(ethers.keccak256(forward.message)), 'destination delivered');
   check('Arbitrum→BOT message delivered', await botMailbox.delivered(reverse.messageId), 'destination delivered');
@@ -105,7 +110,12 @@ const eq = (a, b) => String(a).toLowerCase() === String(b).toLowerCase();
     check(`${cfg.name} ISM bound to its Mailbox`, eq(await ism3.mailbox(), cfg.mailbox), await ism3.mailbox());
     check(`${cfg.name} ISM trusted relayer is deployer`, eq(await ism3.trustedRelayer(), dep.address), await ism3.trustedRelayer());
     check(`${cfg.name} relayer wallet has gas`, (await p.getBalance(dep.address)) > 0n, `${ethers.formatEther(await p.getBalance(dep.address))} ETH`);
+    legs.push({ name: cfg.name, supply: await router.totalSupply() });
   }
+
+  const supplyTotal = legs.reduce((a, l) => a + l.supply, 0n);
+  check('Locked collateral equals total synthetic supply (all legs)', locked === supplyTotal,
+    `${fmt(locked)} locked vs ${fmt(supplyTotal)} minted (${legs.map((l) => `${l.name} ${fmt(l.supply)}`).join(' + ')})`);
 
   console.log('===== READ-ONLY SECURITY CHECK =====');
   for (const c of checks) console.log(`${c.pass ? 'PASS' : 'FAIL'} | ${c.name} | ${c.detail}`);
