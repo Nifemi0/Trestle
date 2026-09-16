@@ -11,14 +11,25 @@ class Handler(SimpleHTTPRequestHandler):
         super().end_headers()
     def do_GET(self):
         if self.path == '/api/status':
+            # chain labels + the explorer of the chain the relay tx landed on (the destination)
+            LABEL = {'bot': 'BOT Chain', 'arb': 'Arbitrum Sepolia', 'base': 'Base Sepolia', 'arc': 'Arc Testnet'}
+            EXPLORER = {'bot': 'https://scan.bohr.life/tx/', 'arb': 'https://sepolia.arbiscan.io/tx/',
+                        'base': 'https://sepolia.basescan.org/tx/', 'arc': 'https://testnet.arcscan.app/tx/'}
             recent=[]
             try:
                 with open(STATE) as f: state=json.load(f)
                 for msg in state.get('messages', {}).values():
-                    recent.append({'direction': msg.get('source','').replace('bot','BOT Chain').replace('arb','Arbitrum Sepolia'), 'time': msg.get('at','').replace('T',' ')[:16], 'relayTx': msg.get('relayTx'), 'explorer': 'https://sepolia.arbiscan.io/tx/'+msg.get('relayTx','')})
+                    source = msg.get('source', '')                 # e.g. "base->bot"
+                    src, _, dst = source.partition('->')
+                    recent.append({
+                        'direction': f"{LABEL.get(src, src)} → {LABEL.get(dst, dst)}",
+                        'time': msg.get('at', '').replace('T', ' ')[:16],
+                        'relayTx': msg.get('relayTx'),
+                        'explorer': EXPLORER.get(dst, '') + (msg.get('relayTx') or ''),
+                    })
             except (OSError, json.JSONDecodeError): pass
             recent.sort(key=lambda x:x.get('time',''), reverse=True)
-            body=json.dumps({'status':'online','route':'BOT Chain testnet ↔ Arbitrum Sepolia','recent':recent[:8]}).encode()
+            body=json.dumps({'status':'online','route':'4-chain Hyperlane mesh: BOT Chain ↔ Arbitrum ↔ Base ↔ Arc (12 routes)','recent':recent[:8]}).encode()
             self.send_response(200); self.send_header('Content-Type','application/json'); self.send_header('Content-Length',str(len(body))); self.end_headers(); self.wfile.write(body); return
         return super().do_GET()
     def log_message(self, fmt, *args): pass
