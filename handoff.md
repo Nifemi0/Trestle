@@ -134,9 +134,19 @@ unless something is wrong**, so failures reach chat without anyone watching logs
 Verified 2026-09-16: live BOT→Base→BOT round trip delivered under systemd; `kill -9` on the relayer
 auto-restarted in ~12s (`NRestarts=1`) with a fresh heartbeat; accounting exact (locked 158 == minted 158).
 
-The repo is now under **git** (local only, no remote): `deployer.key`, `deployer.json`, `relayer.env`,
-`relayer_state.json`, logs and `node_modules` are gitignored. Do not add a remote until the keys are
-rotated/isolated.
+The repo is under **git and published**: https://github.com/Nifemi0/Trestle (public, branch `main`).
+`deployer.key`, `deployer.json`, `relayer.env`, `relayer_state.json`, logs and `node_modules` are
+gitignored, and `*.env` / `.env` now are too.
+
+**Publish audit (2026-09-16, before the first push):** no private key or API token exists in the
+tracked files or anywhere in history — `deployer.key` / `deployer.json` were never committed
+(0 commits added them), and `make_deployer.js` only *generates* a random wallet, it does not embed
+one. The pushed tree was re-checked through the GitHub API after the push: 54 files, zero
+secret-like paths. Any future push should re-run that check (the pre-push gate aborts if an
+`.env`/key file is staged).
+
+Note: the first six commits are authored `bridge <bridge@botchain.test>`, so GitHub does not link
+them to the Nifemi0 account; commits from `bc74e6f` on use the account's noreply address.
 
 ## Automatic relayer
 
