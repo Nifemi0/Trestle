@@ -33,6 +33,7 @@ const fetch = async () => { fetched++; return { json: async () => ({ recent: [] 
 const sandbox = { window, document, localStorage, fetch, console, setTimeout: () => {}, Promise, BigInt, JSON, Number, Math, Date, String, Error };
 sandbox.globalThis = sandbox;
 vm.createContext(sandbox);
+vm.runInContext(fs.readFileSync('/root/botchain-bridge/frontend/config.js', 'utf8'), sandbox, { filename: 'config.js' });
 vm.runInContext(fs.readFileSync('/root/botchain-bridge/frontend/app.js', 'utf8'), sandbox, { filename: 'app.js' });
 
 const api = window.__trestle;

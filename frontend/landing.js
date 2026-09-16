@@ -3,9 +3,10 @@
 // app.js already publishes (window.__trestle) so there is one
 // source of truth for chain data.
 (() => {
-  const api = window.__trestle;
+  const api = window.__trestle || window.__trestleConfig;
   if (!api) return;
   const { CONFIG, CHAIN_ORDER } = api;
+  const getRoute = api.getRoute || (() => ({ from: 'bot', to: 'arb' }));
 
   // ---- twelve-route matrix -------------------------------------------------
   const matrix = document.getElementById('route-matrix');
@@ -42,7 +43,7 @@
   // ---- route-facts rail follows the selected route ------------------------
   const short = (a) => (a && a.length > 12 ? `${a.slice(0, 6)}…${a.slice(-4)}` : a || '—');
   function paintFacts() {
-    const { from, to } = api.getRoute();
+    const { from, to } = getRoute();
     const f = CONFIG[from], t = CONFIG[to];
     const set = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
     set('fact-source', `${f.tokenLabel} · ${f.name}`);

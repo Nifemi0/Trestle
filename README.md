@@ -184,7 +184,7 @@ Arc testnet has only one public RPC (no failover possible); no per-transfer valu
 │   └── diagnostics/  one-off investigation scripts (balances, gas, tx inspection, demo proof)
 ├── test/          `npm test` + pressure sims — chain/wiring/accounting/relayer assertions
 ├── state/         last-transfer records the test and demo scripts assert against
-├── frontend/      the Trestle demo UI (static page + /api/status) served on :8088
+├── frontend/      multi-page Trestle UI (/, /bridge, /status, /routes, /proof, /security, /docs) served on :8088
 ├── configs/       Hyperlane core + warp-route configs used at deploy time
 ├── registry/      local Hyperlane registry (chain metadata + addresses)
 └── systemd/       unit files for the relayer and the frontend
@@ -303,9 +303,19 @@ contracts, relayer and scripts are unchanged.
 
 Design direction: **acid chartreuse on near-black** — one accent used for keylines and
 outlines rather than fills, condensed grotesk headings, an expanded outlined wordmark, and
-mono for every on-chain value. The hero runs a chartreuse point-lattice terrain drawn on a
-canvas; the page structure follows hero → bridge card + facts rail → 01–04 settlement steps
-→ twelve-route matrix → live feed.
+mono for every on-chain value. The UI is now split into product pages instead of one crowded
+landing page:
+
+- `/` — home/positioning and high-level proof
+- `/bridge` — focused transfer app
+- `/status` — live operational status backed by `/api/status`
+- `/routes` — 12-route matrix + enrolled chains
+- `/proof` — tests, simulations and verification evidence
+- `/security` — honest trust boundary and mainnet-readiness path
+- `/docs` — quickstart and repo guide
+
+Shared chain data lives in `frontend/config.js`; the bridge app loads `frontend/app.js`, while
+informational pages read the same config through `frontend/landing.js` / `frontend/status.js`.
 
 ```bash
 systemctl status botchain-frontend      # port 8088
@@ -314,9 +324,18 @@ curl -s localhost:8088/api/status
 
 | File | Purpose |
 |---|---|
-| `frontend/index.html` | page structure |
+| `frontend/index.html` | home/positioning page |
+| `frontend/bridge.html` | focused transfer app |
+| `frontend/status.html` | live status dashboard backed by `/api/status` |
+| `frontend/routes.html` | twelve-route mesh and enrolled chain view |
+| `frontend/proof.html` | verification and pressure-test evidence |
+| `frontend/security.html` | testnet trust model and mainnet readiness boundary |
+| `frontend/docs.html` | developer quickstart and repo guide |
+| `frontend/config.js` | shared chain configuration for all pages |
 | `frontend/styles.css` | design tokens + layout (single accent, keyline cards) |
-| `frontend/app.js` | wallet, route selection, balances, transfer + status steps (**unchanged logic**) |
+| `frontend/app.js` | wallet, route selection, balances, transfer + status steps |
+| `frontend/nav.js` | shared active navigation + mobile menu |
+| `frontend/status.js` | live status page polling/rendering |
 | `frontend/mesh.js` | hero point-lattice terrain (canvas; ~20fps, pauses off-screen, honours reduced-motion) |
 | `frontend/landing.js` | twelve-route matrix, facts rail, relayer heartbeat, scroll reveals |
 | `frontend/logic_test.js` | headless logic test — `node frontend/logic_test.js` (24 checks, no browser) |

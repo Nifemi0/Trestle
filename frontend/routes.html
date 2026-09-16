@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#101111" />
+  <title>Routes — Trestle</title>
+  <meta name="description" content="Trestle route mesh across BOT Chain, Arbitrum, Base and Arc." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body class="">
+  <div class="grid-bg" aria-hidden="true"></div>
+  <header class="topbar">
+    <a class="brand" href="/">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 20h20M5 20l3-11M19 20l-3-11M12 20V9M5 9h14M8.5 9V5.5h7V9M12 5.5V2.5"/></svg></span>
+      <span class="brand-name">trestle</span>
+    </a>
+    <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="site-nav">menu</button>
+    <nav class="nav" id="site-nav" aria-label="Primary">
+      <a href="/">Home</a>
+      <a href="/bridge">Bridge</a>
+      <a href="/status">Status</a>
+      <a href="/routes">Routes</a>
+      <a href="/proof">Proof</a>
+      <a href="/security">Security</a>
+      <a href="/docs">Docs</a>
+    </nav>
+    <div class="topbar-right">
+      <span class="pill live"><span class="pulse"></span> testnet live</span>
+      <a class="button tiny" href="/bridge">Launch bridge <span>↘</span></a>
+    </div>
+  </header>
+  <main>
+    <section class="page-hero"><div class="page-kicker">ROUTE MESH</div><h1>Twelve enrolled routes.</h1><p class="lede">Every chain is enrolled with every other chain in the testnet mesh. Domains and token representations are shown directly from the shared config.</p></section>
+    <section class="page-shell"><div class="matrix-wrap reveal"><div class="matrix-head"><span>FROM</span><span>TO</span><span>DOMAINS</span><span>ASSET</span><span>STATUS</span></div><div id="route-matrix" class="matrix"></div></div></section>
+    <section class="page-shell"><div class="section-head"><div class="eyebrow">ENROLLED CHAINS</div><h2>Four-chain foundation</h2></div><ul class="chain-list page-grid" id="chain-list"></ul></section>
+    <script src="/config.js"></script><script src="/landing.js"></script>
+  </main>
+  <footer>
+    <div class="foot-brand"><span class="brand-name">trestle</span><span class="foot-sub">BOT Chain interop · testnet</span></div>
+    <nav class="foot-links" aria-label="Footer">
+      <a href="/bridge">Bridge</a><a href="/status">Status</a><a href="/proof">Proof</a><a href="/security">Security</a><a href="/docs">Docs</a>
+    </nav>
+    <p class="foot-note">Unaudited testnet software. No token, no sale, no custody of user funds.</p>
+  </footer>
+  <script src="/nav.js"></script>
+</body>
+</html>

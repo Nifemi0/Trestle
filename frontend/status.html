@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#101111" />
+  <title>Status — Trestle</title>
+  <meta name="description" content="Live relayer and route status for Trestle." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body class="">
+  <div class="grid-bg" aria-hidden="true"></div>
+  <header class="topbar">
+    <a class="brand" href="/">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 20h20M5 20l3-11M19 20l-3-11M12 20V9M5 9h14M8.5 9V5.5h7V9M12 5.5V2.5"/></svg></span>
+      <span class="brand-name">trestle</span>
+    </a>
+    <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="site-nav">menu</button>
+    <nav class="nav" id="site-nav" aria-label="Primary">
+      <a href="/">Home</a>
+      <a href="/bridge">Bridge</a>
+      <a href="/status">Status</a>
+      <a href="/routes">Routes</a>
+      <a href="/proof">Proof</a>
+      <a href="/security">Security</a>
+      <a href="/docs">Docs</a>
+    </nav>
+    <div class="topbar-right">
+      <span class="pill live"><span class="pulse"></span> testnet live</span>
+      <a class="button tiny" href="/bridge">Launch bridge <span>↘</span></a>
+    </div>
+  </header>
+  <main>
+    <section class="page-hero"><div class="page-kicker">LIVE STATUS</div><h1>Operational view of the bridge.</h1><p class="lede">Relayer state, recent delivery feed and current accounting status from the running testnet deployment.</p></section>
+    <section class="page-shell status-grid">
+      <div class="status-stack">
+        <div class="status-card"><div class="tab-outline sm">NETWORK</div><dl class="kv"><div><dt>Status</dt><dd class="good" id="status-state">checking…</dd></div><div><dt>Route</dt><dd id="status-route">—</dd></div><div><dt>Recent entries</dt><dd id="status-recent-count">—</dd></div><div><dt>Latest route</dt><dd id="status-latest-route">—</dd></div><div><dt>Latest time</dt><dd id="status-latest-time">—</dd></div></dl></div>
+        <div class="status-card"><div class="tab-outline sm">ACCOUNTING</div><div class="big-metric">179 = 179</div><div class="metric-label">locked collateral = minted supply</div><p>Live invariant from the latest local health check: Arbitrum 153 + Base 1 + Arc 25.</p></div>
+      </div>
+      <div class="status-card"><div class="tab-outline sm">RECENT RELAYS</div><div id="status-recent" class="activity-list"><div class="skeleton"></div><div class="skeleton short"></div></div></div>
+    </section>
+    <script src="/status.js"></script>
+  </main>
+  <footer>
+    <div class="foot-brand"><span class="brand-name">trestle</span><span class="foot-sub">BOT Chain interop · testnet</span></div>
+    <nav class="foot-links" aria-label="Footer">
+      <a href="/bridge">Bridge</a><a href="/status">Status</a><a href="/proof">Proof</a><a href="/security">Security</a><a href="/docs">Docs</a>
+    </nav>
+    <p class="foot-note">Unaudited testnet software. No token, no sale, no custody of user funds.</p>
+  </footer>
+  <script src="/nav.js"></script>
+</body>
+</html>

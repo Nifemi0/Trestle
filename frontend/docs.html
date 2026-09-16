@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#101111" />
+  <title>Docs — Trestle</title>
+  <meta name="description" content="Developer quickstart and repo guide for Trestle." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body class="">
+  <div class="grid-bg" aria-hidden="true"></div>
+  <header class="topbar">
+    <a class="brand" href="/">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 20h20M5 20l3-11M19 20l-3-11M12 20V9M5 9h14M8.5 9V5.5h7V9M12 5.5V2.5"/></svg></span>
+      <span class="brand-name">trestle</span>
+    </a>
+    <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="site-nav">menu</button>
+    <nav class="nav" id="site-nav" aria-label="Primary">
+      <a href="/">Home</a>
+      <a href="/bridge">Bridge</a>
+      <a href="/status">Status</a>
+      <a href="/routes">Routes</a>
+      <a href="/proof">Proof</a>
+      <a href="/security">Security</a>
+      <a href="/docs">Docs</a>
+    </nav>
+    <div class="topbar-right">
+      <span class="pill live"><span class="pulse"></span> testnet live</span>
+      <a class="button tiny" href="/bridge">Launch bridge <span>↘</span></a>
+    </div>
+  </header>
+  <main>
+    <section class="page-hero"><div class="page-kicker">DEVELOPER DOCS</div><h1>Run and verify Trestle.</h1><p class="lede">Fast commands for the public repo: install, test, run the relayer, and inspect the bridge layout.</p></section>
+    <section class="page-shell docs-block"><h2>Quickstart</h2><pre>npm install
+npm test
+npm run test:pressure:quick
+node frontend/logic_test.js</pre></section>
+    <section class="page-shell page-grid">
+      <div class="info-card"><h3>Source</h3><p><span class="mono">src/relayer.js</span> and <span class="mono">src/health.js</span> run the operational layer.</p></div>
+      <div class="info-card"><h3>Frontend</h3><p><span class="mono">frontend/*.html</span> pages share config from <span class="mono">config.js</span>.</p></div>
+      <div class="info-card"><h3>Tests</h3><p><span class="mono">test/</span> contains chain checks, relayer scope regression and pressure simulations.</p></div>
+    </section>
+    <section class="page-shell docs-block"><h2>Repo layout</h2><pre>contracts/  src/  scripts/  test/  state/  frontend/  configs/  registry/  systemd/</pre></section>
+  </main>
+  <footer>
+    <div class="foot-brand"><span class="brand-name">trestle</span><span class="foot-sub">BOT Chain interop · testnet</span></div>
+    <nav class="foot-links" aria-label="Footer">
+      <a href="/bridge">Bridge</a><a href="/status">Status</a><a href="/proof">Proof</a><a href="/security">Security</a><a href="/docs">Docs</a>
+    </nav>
+    <p class="foot-note">Unaudited testnet software. No token, no sale, no custody of user funds.</p>
+  </footer>
+  <script src="/nav.js"></script>
+</body>
+</html>

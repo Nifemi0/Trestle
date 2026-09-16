@@ -40,15 +40,24 @@ URL: http://104.252.77.136:8088
 
 Frontend directory: `/root/botchain-bridge/frontend/`
 
-- `index.html` — bridge UI markup (hero, bridge card, steps, route matrix, activity, footer)
+- `index.html` — home/positioning page
+- `bridge.html` — focused transfer app
+- `status.html` — live operational dashboard backed by `/api/status`
+- `routes.html` — twelve-route matrix and enrolled chains
+- `proof.html` — verification and pressure-test evidence
+- `security.html` — testnet trust model and mainnet-readiness path
+- `docs.html` — developer quickstart and repo guide
+- `config.js` — shared chain config used by every page
 - `styles.css` — design tokens + layout (single accent, keyline cards, mobile-first breakpoints)
 - `mesh.js` — hero point-lattice terrain canvas (capped lattice, ~20fps, pauses off-screen, reduced-motion safe)
 - `landing.js` — route matrix, facts rail, relayer heartbeat, scroll reveals
+- `status.js` — live status page polling/rendering
+- `nav.js` — shared active navigation + mobile menu
 - `app.js` — wallet connection, network switching, balances, forward/reverse transfers, status polling;
-  publishes `window.__trestle` as the single chain-data source and migrates old `relayline_*`
+  publishes `window.__trestle` as the bridge app state and migrates old `relayline_*`
   browser storage to `trestle_*`
 - `logic_test.js` — headless VM test of the routing logic (24 checks)
-- `server.py` — static server plus `/api/status` (route label + per-destination explorer links)
+- `server.py` — static server plus `/api/status` and extensionless page routes
 
 ## Bridge contracts
 

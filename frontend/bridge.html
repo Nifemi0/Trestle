@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#101111" />
+  <title>Bridge — Trestle</title>
+  <meta name="description" content="Bridge testnet USDT across the Trestle mesh." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body class="bridge-page">
+  <div class="grid-bg" aria-hidden="true"></div>
+  <header class="topbar">
+    <a class="brand" href="/">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 20h20M5 20l3-11M19 20l-3-11M12 20V9M5 9h14M8.5 9V5.5h7V9M12 5.5V2.5"/></svg></span>
+      <span class="brand-name">trestle</span>
+    </a>
+    <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="site-nav">menu</button>
+    <nav class="nav" id="site-nav" aria-label="Primary">
+      <a href="/">Home</a>
+      <a href="/bridge">Bridge</a>
+      <a href="/status">Status</a>
+      <a href="/routes">Routes</a>
+      <a href="/proof">Proof</a>
+      <a href="/security">Security</a>
+      <a href="/docs">Docs</a>
+    </nav>
+    <div class="topbar-right">
+      <span class="pill live"><span class="pulse"></span> testnet live</span>
+      <a class="button tiny" href="/bridge">Launch bridge <span>↘</span></a>
+    </div>
+  </header>
+  <main>
+    <section class="page-hero"><div class="page-kicker">BRIDGE APP</div><h1>Move testnet USDT across the mesh.</h1><p class="lede">A focused transfer screen: choose route, connect wallet, send and watch delivery steps.</p></section>
+    <section id="bridge" class="bridge-grid">
+      <div class="bridge-card reveal">
+        <div class="card-head"><div><div class="tab-outline">TRANSFER</div><h2>Bridge testnet USDT</h2></div><span class="live-tag"><span class="pulse"></span> relayer online</span></div>
+        <div class="route-grid">
+          <div class="chain-box"><label>FROM</label><div class="chain-name"><span id="from-icon" class="chain-icon bot">B</span><span id="from-name">BOT Chain</span><strong id="from-domain">968</strong></div><small id="from-network">BOT testnet</small><select id="from-select" class="chain-select" aria-label="Source chain"></select></div>
+          <div class="route-arrow"><button class="flip-route" id="flip-route" title="Reverse route" aria-label="Reverse route">⇅</button></div>
+          <div class="chain-box"><label>TO</label><div class="chain-name"><span id="to-icon" class="chain-icon arb">A</span><span id="to-name">Arbitrum</span><strong id="to-domain">421614</strong></div><small id="to-network">Sepolia</small><select id="to-select" class="chain-select" aria-label="Destination chain"></select></div>
+        </div>
+        <div class="amount-row"><div><label>AMOUNT</label><div class="amount-input"><input id="amount" type="number" min="0.01" step="0.01" value="1.00" /><span id="amount-symbol">USDT</span></div></div><div class="balance"><span id="source-balance-label">BOT Chain USDT balance</span><strong id="balance">Connect wallet</strong><span class="dest-balance-label" id="destination-balance-label">Arbitrum botUSDT</span><strong id="destination-balance">—</strong></div></div>
+        <button class="button primary full" id="connect">Connect wallet <span>↗</span></button><p class="hint" id="notice">Connect MetaMask, Rabby, or another EVM wallet on the source chain.</p><div id="transfer-status" class="transfer-status" hidden></div>
+        <ul class="notes card-notes"><li>Testnet only — these assets carry no value.</li><li>USDT off BOT Chain is the mesh representation, <span class="mono">botUSDT</span>.</li><li>Relay takes 15–30 seconds; keep the tab open through delivery.</li></ul>
+      </div>
+      <aside class="rail reveal"><div class="rail-block"><div class="tab-outline sm">ROUTE FACTS</div><dl class="facts"><div><dt>Source token</dt><dd id="fact-source">USDT · BOT Chain</dd></div><div><dt>Destination token</dt><dd id="fact-dest">botUSDT · Arbitrum</dd></div><div><dt>Source contract</dt><dd class="mono addr" id="fact-token">0x75ed…0fe3</dd></div><div><dt>Router</dt><dd class="mono addr" id="fact-router">0xb2BF…CEB6</dd></div><div><dt>Relayer status</dt><dd id="relayer-status"><span class="pulse"></span> checking…</dd></div><div><dt>Last relay</dt><dd class="mono" id="last-relay">—</dd></div></dl></div><div class="rail-block"><div class="tab-outline sm">ENROLLED CHAINS</div><ul class="chain-list" id="chain-list"></ul></div></aside>
+    </section>
+    <section id="activity" class="activity"><div class="section-head"><div><div class="eyebrow">LIVE FEED</div><h2>Recent activity</h2></div><button class="button ghost" id="refresh">Refresh ↻</button></div><div id="activity-list" class="activity-list"><div class="skeleton"></div><div class="skeleton short"></div></div></section>
+    <span id="route-count" hidden>12</span>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.umd.min.js"></script><script src="/config.js"></script><script src="/app.js"></script><script src="/landing.js"></script>
+  </main>
+  <footer>
+    <div class="foot-brand"><span class="brand-name">trestle</span><span class="foot-sub">BOT Chain interop · testnet</span></div>
+    <nav class="foot-links" aria-label="Footer">
+      <a href="/bridge">Bridge</a><a href="/status">Status</a><a href="/proof">Proof</a><a href="/security">Security</a><a href="/docs">Docs</a>
+    </nav>
+    <p class="foot-note">Unaudited testnet software. No token, no sale, no custody of user funds.</p>
+  </footer>
+  <script src="/nav.js"></script>
+</body>
+</html>

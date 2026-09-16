@@ -10,6 +10,11 @@ class Handler(SimpleHTTPRequestHandler):
         self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
         super().end_headers()
     def do_GET(self):
+        clean_path = self.path.split('?', 1)[0].rstrip('/') or '/'
+        pages = {'/bridge':'/bridge.html', '/status':'/status.html', '/routes':'/routes.html',
+                 '/proof':'/proof.html', '/security':'/security.html', '/docs':'/docs.html'}
+        if clean_path in pages:
+            self.path = pages[clean_path]
         if self.path == '/api/status':
             # chain labels + the explorer of the chain the relay tx landed on (the destination)
             LABEL = {'bot': 'BOT Chain', 'arb': 'Arbitrum Sepolia', 'base': 'Base Sepolia', 'arc': 'Arc Testnet'}
