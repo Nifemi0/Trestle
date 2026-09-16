@@ -5,6 +5,7 @@
   "main": "src/relayer.js",
   "scripts": {
     "test": "node test/security_check.js && node test/relayer_scope_test.js",
+    "test:pressure": "node test/pressure_sim.js --cases=1000000 && node test/accounting_pressure_sim.js --cases=1000000",
     "relayer": "node src/relayer.js",
     "relayer:once": "node src/relayer.js --once"
   },
