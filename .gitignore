@@ -3,6 +3,8 @@ logs/
 deployer.key
 deployer.json
 relayer.env
+*.env
+.env
 relayer_state.json
 relayer_health.json
 alerts.log

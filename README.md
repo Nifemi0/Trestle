@@ -1,4 +1,4 @@
-# BOT Chain ↔ multichain USDT bridge (Hyperlane)
+# Trestle — BOT Chain ↔ multichain USDT bridge (Hyperlane)
 
 Testnet-first build of a USDT bridge for **BOT Chain**, using **Hyperlane** as the
 message layer — so BOT Chain gets USDT routes to chains the official bridge does
