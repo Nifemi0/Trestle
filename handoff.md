@@ -145,8 +145,12 @@ one. The pushed tree was re-checked through the GitHub API after the push: 54 fi
 secret-like paths. Any future push should re-run that check (the pre-push gate aborts if an
 `.env`/key file is staged).
 
-Note: the first six commits are authored `bridge <bridge@botchain.test>`, so GitHub does not link
-them to the Nifemi0 account; commits from `bc74e6f` on use the account's noreply address.
+**Authorship:** every commit is authored and committed by
+`Nifemi0 <130924107+Nifemi0@users.noreply.github.com>`, so the history links to the GitHub account.
+The first six commits originally carried a placeholder identity; the history was rewritten on
+2026-09-16 with the **tree hash unchanged** (attribution-only rewrite — no file content differs),
+then force-pushed. The repo-local `user.name` / `user.email` are set to that identity, so future
+commits are attributed correctly without extra flags.
 
 ## Automatic relayer
 
