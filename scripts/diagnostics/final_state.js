@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { ethers } = require('/root/copyentries/node_modules/ethers');
+const { ethers } = require('ethers');
 const art = JSON.parse(fs.readFileSync('/root/botchain-bridge/contracts/warp_artifacts.json', 'utf8'));
 const dep = JSON.parse(fs.readFileSync('/root/botchain-bridge/deployer.json', 'utf8'));
 const warp = JSON.parse(fs.readFileSync('/root/botchain-bridge/contracts/warp_deployments.json', 'utf8'));

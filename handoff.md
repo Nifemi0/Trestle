@@ -219,10 +219,25 @@ Before real funds:
 5. Add adversarial tests and obtain an audit.
 6. Design and fund two-sided canonical-USDT liquidity only after the security work.
 
+Post-inspection fixes applied 2026-09-16:
+
+- `src/relayer.js` now scopes dispatches to **Trestle router → Trestle router** messages only:
+   message `origin`, `destination`, `sender` and `recipient` must all match the selected route. This
+   closes the non-router Hyperlane-message gas-griefing bug found in the post-reorg inspection, and
+   `test/relayer_scope_test.js` keeps it fixed.
+- The repo now uses local package dependencies (`require('ethers')`) instead of importing ethers from
+  `/root/copyentries`, so a clean clone can run after `npm install`.
+- `add_chain.js` and `resume_chain.js` include every already-deployed peer (BOT, Arb, Base, Arc) when
+  adding another chain, so future chains do not silently break the full-mesh promise.
+- `configs/warp-route-usdt.yaml` includes `arctestnet`, matching the deployed state.
+- Frontend transfers re-check/switch the source wallet chain and refresh signer/account immediately
+  before sending, preventing stale-signer or wrong-network failures after manual wallet network changes.
+- `src/health.js` treats old `alerts.log` entries as verbose history only; resolved transient alerts no
+  longer keep the watchdog noisy for 24h.
+
 ## Next build step
 
-1. Publish the repo (keys stripped: `deployer.key`, `deployer.json`, `relayer.env`) and adapt the
-   positioning to the next BOT Chain hackathon theme.
+1. Keep the public repo current (`https://github.com/Nifemi0/Trestle`) and adapt the positioning to the next BOT Chain hackathon theme.
 2. Add chains 5 and 6 with `add_chain.js --target=op` / `--target=amoy` once their gas is funded —
    the UI route matrix picks them up automatically from `CONFIG`, no markup change needed.
 3. Optional: drop the `relayline_*` localStorage keys and the `window.__relayline` alias once the

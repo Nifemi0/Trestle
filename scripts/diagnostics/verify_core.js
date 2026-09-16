@@ -1,4 +1,4 @@
-const { ethers } = require('/root/copyentries/node_modules/ethers');
+const { ethers } = require('ethers');
 const p = new ethers.JsonRpcProvider('https://rpc.bohr.life');
 const D = '0x9d2B7AF30C1511828f0aea6146A8627739f9d65b';
 

@@ -4,7 +4,7 @@
 // call succeeds, so it was a gas/estimate problem, not a state problem).
 //   node resume_chain.js [--target=base]
 const fs = require('fs');
-const { ethers } = require('/root/copyentries/node_modules/ethers');
+const { ethers } = require('ethers');
 const ROOT = '/root/botchain-bridge';
 const art = JSON.parse(fs.readFileSync(`${ROOT}/contracts/warp_artifacts.json`, 'utf8'));
 const dep = JSON.parse(fs.readFileSync(`${ROOT}/deployer.json`, 'utf8'));
@@ -41,6 +41,12 @@ if (warp.base && warp.base.synthetic) {
                mailbox: '0x6966b0E55883d49BFB24539356a2f8A673E02039', router: warp.base.synthetic,
                explorer: 'https://sepolia.basescan.org/tx/', ismAbi: art.TrustedRelayerIsm.abi });
 }
+if (warp.arc && warp.arc.synthetic && key !== 'arc') {
+  PEERS.push({ name: 'Arc Testnet', domain: 5042002, rpc: 'https://rpc.testnet.arc.network',
+               mailbox: '0xC2E414899C49ff4C95c639aA6bca6B1f2799bF1B', router: warp.arc.synthetic,
+               explorer: 'https://testnet.arcscan.app/tx/', ismAbi: art.TrustedRelayerIsm.abi });
+}
+for (let i = PEERS.length - 1; i >= 0; i--) if (PEERS[i].domain === T?.domain) PEERS.splice(i, 1);
 // peer routers use the synthetic ABI; BOT is the collateral side
 const abiFor = (c) => (c.router === warp.collateral ? art.HypERC20Collateral.abi : art.HypERC20.abi);
 

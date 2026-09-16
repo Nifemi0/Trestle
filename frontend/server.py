@@ -23,6 +23,8 @@ class Handler(SimpleHTTPRequestHandler):
                     src, _, dst = source.partition('->')
                     recent.append({
                         'direction': f"{LABEL.get(src, src)} → {LABEL.get(dst, dst)}",
+                        'sourceKey': src,
+                        'destinationKey': dst,
                         'time': msg.get('at', '').replace('T', ' ')[:16],
                         'relayTx': msg.get('relayTx'),
                         'explorer': EXPLORER.get(dst, '') + (msg.get('relayTx') or ''),

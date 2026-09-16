@@ -1,4 +1,4 @@
-# USDT warp route config — BOT Chain testnet ↔ Arbitrum Sepolia ↔ Base Sepolia
+# USDT warp route config — BOT Chain testnet ↔ Arbitrum Sepolia ↔ Base Sepolia ↔ Arc Testnet
 # Collateral on BOT Chain testnet (their canonical testnet USDT, locked).
 # Synthetic legs on the remote chains (minted/burned by the warp route) — this means a
 # remote chain only needs gas, no testnet USDT of its own.
@@ -20,6 +20,12 @@ arbitrumsepolia:
   symbol: "botUSDT"
   decimals: 6
 basesepolia:
+  type: synthetic
+  owner: "0x9d2B7AF30C1511828f0aea6146A8627739f9d65b"
+  name: "BOT Bridged USDT"
+  symbol: "botUSDT"
+  decimals: 6
+arctestnet:
   type: synthetic
   owner: "0x9d2B7AF30C1511828f0aea6146A8627739f9d65b"
   name: "BOT Bridged USDT"

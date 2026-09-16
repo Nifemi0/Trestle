@@ -1,4 +1,4 @@
-const { ethers } = require('/root/copyentries/node_modules/ethers');
+const { ethers } = require('ethers');
 const fs = require('fs');
 
 // Deployer for the BOT Chain testnet Hyperlane deployment. Testnet gas only.

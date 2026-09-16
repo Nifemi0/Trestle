@@ -6,7 +6,7 @@
 // From base/arb it's the synthetic botUSDT (burn). Destination can be any enrolled chain.
 // Recipient defaults to the deployer address, so balance changes are self-evident.
 const fs = require('fs');
-const { ethers } = require('/root/copyentries/node_modules/ethers');
+const { ethers } = require('ethers');
 const ROOT = '/root/botchain-bridge';
 const art = JSON.parse(fs.readFileSync(`${ROOT}/contracts/warp_artifacts.json`, 'utf8'));
 const dep = JSON.parse(fs.readFileSync(`${ROOT}/deployer.json`, 'utf8'));

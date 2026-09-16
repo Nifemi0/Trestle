@@ -16,13 +16,14 @@
 //
 const fs = require('fs');
 const path = require('path');
-const { ethers } = require('/root/copyentries/node_modules/ethers');
+const { ethers } = require('ethers');
 
 const ROOT = '/root/botchain-bridge';
 const LOG_DIR = path.join(ROOT, 'logs');
 fs.mkdirSync(LOG_DIR, { recursive: true });
 
 const dep = JSON.parse(fs.readFileSync(path.join(ROOT, 'deployer.json'), 'utf8'));
+const warp = JSON.parse(fs.readFileSync(path.join(ROOT, 'contracts/warp_deployments.json'), 'utf8'));
 const statePath = process.env.RELAYER_STATE || path.join(ROOT, 'relayer_state.json');
 const healthPath = process.env.RELAYER_HEALTH || path.join(ROOT, 'relayer_health.json');
 const alertsPath = process.env.RELAYER_ALERTS || path.join(ROOT, 'alerts.log');
@@ -46,16 +47,16 @@ const coder = ethers.AbiCoder.defaultAbiCoder();
 // confirmations >= that chain's reorgPeriod from the Hyperlane registry.
 const CHAINS = {
   bot: { name: 'BOT Chain testnet', domain: 968, confirmations: 3, explorer: 'https://scan.bohr.life/tx/',
-         rpcs: ['https://rpc.bohr.life'],
+         rpcs: ['https://rpc.bohr.life'], router: warp.collateral,
          mailbox: '0xC2E414899C49ff4C95c639aA6bca6B1f2799bF1B' },
   arb: { name: 'Arbitrum Sepolia', domain: 421614, confirmations: 3, explorer: 'https://sepolia.arbiscan.io/tx/',
-         rpcs: ['https://sepolia-rollup.arbitrum.io/rpc', 'https://arbitrum-sepolia-rpc.publicnode.com'],
+         rpcs: ['https://sepolia-rollup.arbitrum.io/rpc', 'https://arbitrum-sepolia-rpc.publicnode.com'], router: warp.synthetic,
          mailbox: '0x598facE78a4302f11E3de0bee1894Da0b2Cb71F8' },
   base: { name: 'Base Sepolia', domain: 84532, confirmations: 6, explorer: 'https://sepolia.basescan.org/tx/',
-         rpcs: ['https://sepolia.base.org', 'https://base-sepolia-rpc.publicnode.com'],
+         rpcs: ['https://sepolia.base.org', 'https://base-sepolia-rpc.publicnode.com'], router: warp.base?.synthetic,
          mailbox: '0x6966b0E55883d49BFB24539356a2f8A673E02039' },
   arc: { name: 'Arc Testnet', domain: 5042002, confirmations: 3, explorer: 'https://testnet.arcscan.app/tx/',
-         rpcs: ['https://rpc.testnet.arc.network'],
+         rpcs: ['https://rpc.testnet.arc.network'], router: warp.arc?.synthetic,
          mailbox: '0xC2E414899C49ff4C95c639aA6bca6B1f2799bF1B' }
 };
 
@@ -144,12 +145,34 @@ function writeHealth(health) {
 }
 
 function padTopic(topic) { return topic.replace(/^0x/, '').padStart(64, '0'); }
+function readU32(bytes, offset) {
+  return Number((BigInt(bytes[offset]) << 24n) | (BigInt(bytes[offset + 1]) << 16n) | (BigInt(bytes[offset + 2]) << 8n) | BigInt(bytes[offset + 3]));
+}
+function b32(address) { return ethers.zeroPadValue(address, 32).toLowerCase(); }
+function parseHyperlaneMessage(message) {
+  const bytes = ethers.getBytes(message);
+  if (bytes.length < 77) throw new Error('message too short');
+  return {
+    version: bytes[0],
+    nonce: readU32(bytes, 1),
+    origin: readU32(bytes, 5),
+    sender: ethers.hexlify(bytes.slice(9, 41)).toLowerCase(),
+    destination: readU32(bytes, 41),
+    recipient: ethers.hexlify(bytes.slice(45, 77)).toLowerCase(),
+    body: ethers.hexlify(bytes.slice(77))
+  };
+}
 function dispatchFromLog(logItem, source, destination) {
   if (logItem.address.toLowerCase() !== source.mailbox.toLowerCase() || logItem.topics.length !== 4) return null;
-  let message;
-  try { message = coder.decode(['bytes'], logItem.data)[0]; } catch { return null; }
+  let message, parsed;
+  try {
+    message = coder.decode(['bytes'], logItem.data)[0];
+    parsed = parseHyperlaneMessage(message);
+  } catch { return null; }
   const declaredDestination = Number(BigInt(`0x${padTopic(logItem.topics[2])}`));
   if (declaredDestination !== destination.domain) return null;
+  if (parsed.origin !== source.domain || parsed.destination !== destination.domain) return null;
+  if (parsed.sender !== b32(source.router) || parsed.recipient !== b32(destination.router)) return null;
   return {
     sourceBlock: logItem.blockNumber,
     sourceTx: logItem.transactionHash,
@@ -269,8 +292,12 @@ async function run() {
   log(`Relayer finished: loops=${stats.loops} relayed=${stats.relayedTotal} errors=${stats.errors}`);
 }
 
-run().catch((err) => {
-  alert('relayer-crash', `fatal: ${(err && err.message) || err}`);
-  console.error(err);
-  process.exitCode = 1;
-});
+if (require.main === module) {
+  run().catch((err) => {
+    alert('relayer-crash', `fatal: ${(err && err.message) || err}`);
+    console.error(err);
+    process.exitCode = 1;
+  });
+}
+
+module.exports = { CHAINS, dispatchFromLog, parseHyperlaneMessage, b32 };

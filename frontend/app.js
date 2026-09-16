@@ -174,6 +174,10 @@ async function waitForDestination(before, amount, d) {
 async function bridge() {
   try {
     const s = source(), d = destination();
+    await ensureChain(s);
+    provider = new ethers.BrowserProvider(window.ethereum);
+    signer = await provider.getSigner();
+    account = await signer.getAddress();
     const text = $('amount').value;
     if (!text || Number(text) <= 0) throw Error('Enter a valid amount.');
     const amount = ethers.parseUnits(text, 6);
@@ -226,8 +230,10 @@ async function bridge() {
 }
 
 function render(data) {
-  const rows = (data.recent || []).map((x) =>
-    `<div class="activity-item"><span class="chain-icon ${x.direction.includes('BOT') ? 'bot' : 'arb'}">↗</span><span class="route">${x.direction}</span><span class="status">Delivered</span><span class="time">${x.time || 'recent'}</span>${x.relayTx ? `<a class="tx" target="_blank" rel="noreferrer" href="${x.explorer}">tx ↗</a>` : ''}</div>`).join('');
+  const rows = (data.recent || []).map((x) => {
+    const iconClass = CONFIG[x.destinationKey]?.kind || CONFIG[x.sourceKey]?.kind || (x.direction.includes('BOT') ? 'bot' : 'arb');
+    return `<div class="activity-item"><span class="chain-icon ${iconClass}">↗</span><span class="route">${x.direction}</span><span class="status">Delivered</span><span class="time">${x.time || 'recent'}</span>${x.relayTx ? `<a class="tx" target="_blank" rel="noreferrer" href="${x.explorer}">tx ↗</a>` : ''}</div>`;
+  }).join('');
   activityList.innerHTML = rows || '<div class="activity-item"><span class="route">No new transfers yet</span><span class="time">Relayer is watching</span></div>';
 }
 async function refresh() {

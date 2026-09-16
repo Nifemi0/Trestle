@@ -208,7 +208,7 @@ state/heartbeat, logs, env files) stay gitignored at the repo root.
 | `scripts/hl.sh` | Hyperlane CLI wrapper — run from the repo root: `./scripts/hl.sh <args>` |
 | `src/relayer.js` | automatic Dispatch scanner and Mailbox processor (4 chains, 12 routes) |
 | `src/health.js` | status/watchdog: heartbeat, stuck messages, alerts, gas floors, collateral invariant |
-| `test/security_check.js` | `npm test` — read-only chain, wiring, delivery, privilege and accounting assertions |
+| `test/security_check.js` / `test/relayer_scope_test.js` | `npm test` — read-only chain/accounting checks plus relayer-scope regression tests |
 | `scripts/diagnostics/*` | one-off tooling: balance/gas checks, tx inspection, demo proof, legacy single-pair transfers |
 | `systemd/*.service` | unit files for the relayer + demo frontend (installed to `/etc/systemd/system/`) |
 
@@ -266,7 +266,7 @@ alias hl='node /root/botchain-bridge/node_modules/@hyperlane-xyz/cli/bundle/inde
 
 # 1. check deployer gas
 #    (faucet: https://faucet.botchain.ai/basic)
-node -e "const{ethers}=require('/root/copyentries/node_modules/ethers');const p=new ethers.JsonRpcProvider('https://rpc.bohr.life');p.getBalance('0x9d2B7AF30C1511828f0aea6146A8627739f9d65b').then(b=>console.log(ethers.formatEther(b),'tBOT'))"
+node -e "const{ethers}=require('ethers');const p=new ethers.JsonRpcProvider('https://rpc.bohr.life');p.getBalance('0x9d2B7AF30C1511828f0aea6146A8627739f9d65b').then(b=>console.log(ethers.formatEther(b),'tBOT'))"
 
 # 2. deploy Hyperlane core on BOT Chain testnet
 HYP_KEY=$(node -e "console.log(require('./deployer.json').privateKey)") \

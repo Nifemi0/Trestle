@@ -8,7 +8,7 @@
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
-const { ethers } = require('/root/copyentries/node_modules/ethers');
+const { ethers } = require('ethers');
 
 const ROOT = '/root/botchain-bridge';
 const VERBOSE = process.argv.includes('--verbose');
@@ -60,12 +60,12 @@ const add = (list, msg) => list.push(msg);
     add(problems, 'relayer_health.json missing — the hardened relayer never completed a loop');
   }
 
-  // 2. alerts written since the last check
+  // 2. alert history is informational only. Active problems are checked from live state above/below.
+  // Otherwise a resolved transient alert would keep the watchdog noisy for 24h.
   const alertsPath = path.join(ROOT, 'alerts.log');
-  if (fs.existsSync(alertsPath)) {
-    const lines = fs.readFileSync(alertsPath, 'utf8').trim().split('\n').filter(Boolean);
-    const recent = lines.slice(-5).filter((l) => Date.now() - new Date(l.slice(0, 24)).getTime() < 24 * 3600 * 1000);
-    if (recent.length) add(problems, `alerts.log (last 24h):\n    ${recent.join('\n    ')}`);
+  if (VERBOSE && fs.existsSync(alertsPath)) {
+    const lines = fs.readFileSync(alertsPath, 'utf8').trim().split('\n').filter(Boolean).slice(-5);
+    if (lines.length) add(ok, `recent alert history:\n    ${lines.join('\n    ')}`);
   }
 
   // 3. gas per chain + route lag

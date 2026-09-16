@@ -2,7 +2,7 @@
 //   BOT Chain testnet (968)      -> HypERC20Collateral wrapping the testnet USDT
 //   Arbitrum Sepolia (421614)    -> HypERC20 (synthetic) + TrustedRelayerIsm
 const fs = require('fs');
-const { ethers } = require('/root/copyentries/node_modules/ethers');
+const { ethers } = require('ethers');
 const art = JSON.parse(fs.readFileSync('/root/botchain-bridge/contracts/warp_artifacts.json', 'utf8'));
 const dep = JSON.parse(fs.readFileSync('/root/botchain-bridge/deployer.json', 'utf8'));
 
