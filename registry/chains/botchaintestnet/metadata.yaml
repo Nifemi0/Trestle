@@ -1,0 +1,29 @@
+# yaml-language-server: $schema=../schema.json
+# Local chain metadata for BOT Chain testnet (NOT yet in the public Hyperlane registry).
+# Used by `hyperlane core deploy --registry <this dir>`.
+name: botchaintestnet
+displayName: BOT Chain Testnet
+chainId: 968
+domainId: 968
+protocol: ethereum
+nativeToken:
+  name: BOT Test Token
+  symbol: tBOT
+  decimals: 18
+rpcUrls:
+  - http: https://rpc.bohr.life
+blockExplorers:
+  - name: BOT Chain Bohr Explorer
+    url: https://scan.bohr.life
+    family: blockscout
+    apiUrl: https://scan.bohr.life/api
+blocks:
+  confirmations: 1
+  reorgPeriod: 1
+  estimateBlockTime: 0.75
+deployer:
+  name: sky
+  url: https://www.botchain.ai
+gasCurrencyCoinGeckoId: ""
+technicalStack: other
+isTestnet: true

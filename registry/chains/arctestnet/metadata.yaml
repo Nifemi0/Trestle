@@ -1,0 +1,31 @@
+# yaml-language-server: $schema=../schema.json
+# Local chain metadata for Arc Testnet (Circle's stablecoin L1 testnet).
+# NOT in the public Hyperlane registry — Arc testnet has NO core deployed yet, so we
+# deploy it ourselves (same recipe used for BOT Chain testnet).
+# Native gas token on Arc is USDC (18 decimals) — not ETH.
+name: arctestnet
+displayName: Arc Testnet
+chainId: 5042002
+domainId: 5042002
+protocol: ethereum
+nativeToken:
+  name: USD Coin
+  symbol: USDC
+  decimals: 18
+rpcUrls:
+  - http: https://rpc.testnet.arc.network
+blockExplorers:
+  - name: Arcscan Testnet
+    url: https://testnet.arcscan.app
+    family: other
+    apiUrl: https://testnet.arcscan.app/api
+blocks:
+  confirmations: 1
+  reorgPeriod: 1
+  estimateBlockTime: 1
+deployer:
+  name: sky
+  url: https://www.botchain.ai
+gasCurrencyCoinGeckoId: usd-coin
+technicalStack: other
+isTestnet: true
