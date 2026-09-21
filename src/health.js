@@ -34,6 +34,24 @@ const problems = [];
 const ok = [];
 const add = (list, msg) => list.push(msg);
 
+// The Arc RPC intermittently answers -32005 "rate limit exceeded", which ethers surfaces as
+// "could not coalesce error" or "missing revert data". Retrying with a fresh provider clears it.
+const RPC_RETRIES = Number(process.env.HEALTH_RPC_RETRIES || 3);
+const RPC_RETRY_MS = Number(process.env.HEALTH_RPC_RETRY_MS || 4000);
+
+async function withRetry(fn) {
+  let lastErr;
+  for (let attempt = 1; attempt <= RPC_RETRIES; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      lastErr = err;
+      if (attempt < RPC_RETRIES) await new Promise((r) => setTimeout(r, RPC_RETRY_MS));
+    }
+  }
+  throw lastErr;
+}
+
 (async () => {
   const dep = JSON.parse(fs.readFileSync(path.join(ROOT, 'deployer.json'), 'utf8'));
 
@@ -91,17 +109,23 @@ const add = (list, msg) => list.push(msg);
     }
   }
 
-  // 4. collateral invariant: locked USDT on BOT == sum of synthetic supplies
+  // 4. collateral invariant: locked USDT on BOT == sum of synthetic supplies.
+  //    Reads are retried (fresh provider each attempt) so a transient Arc RPC hiccup is not
+  //    reported as an accounting failure.
   try {
-    const bot = new ethers.JsonRpcProvider(CHAINS.bot.rpc, undefined, { staticNetwork: true });
     const erc20 = ['function balanceOf(address) view returns (uint256)', 'function totalSupply() view returns (uint256)'];
-    const usdt = new ethers.Contract('0x75edC9335175Fc0552D51D48439F229c10420fe3', erc20, bot);
-    const locked = await usdt.balanceOf(warp.collateral);
+    const locked = await withRetry(() => {
+      const bot = new ethers.JsonRpcProvider(CHAINS.bot.rpc, undefined, { staticNetwork: true });
+      return new ethers.Contract('0x75edC9335175Fc0552D51D48439F229c10420fe3', erc20, bot).balanceOf(warp.collateral);
+    });
     let minted = 0n;
     for (const key of ['arb', 'base', 'arc']) {
       if (!CHAINS[key].synthetic) continue;
-      const p = new ethers.JsonRpcProvider(CHAINS[key].rpc, undefined, { staticNetwork: true });
-      minted += await new ethers.Contract(CHAINS[key].synthetic, erc20, p).totalSupply();
+      const synthetic = CHAINS[key].synthetic;
+      minted += await withRetry(() => {
+        const p = new ethers.JsonRpcProvider(CHAINS[key].rpc, undefined, { staticNetwork: true });
+        return new ethers.Contract(synthetic, erc20, p).totalSupply();
+      });
     }
     if (locked === minted) add(ok, `accounting: locked ${ethers.formatUnits(locked, 6)} == minted ${ethers.formatUnits(minted, 6)}`);
     else add(problems, `ACCOUNTING MISMATCH: locked ${ethers.formatUnits(locked, 6)} vs minted ${ethers.formatUnits(minted, 6)}`);
