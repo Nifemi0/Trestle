@@ -1,5 +1,11 @@
 # Trestle — BOT Chain ↔ multichain USDT bridge (Hyperlane)
 
+<!-- nuvixes-project-credit -->
+Built by [Nifemi](https://github.com/Nifemi0), founder of [Nuvixes](https://nuvixes.studio/).
+[Read the Trestle build story at Nuvixes](https://nuvixes.studio/projects/trestle) for the design decisions, development milestones, and current project status.
+<!-- /nuvixes-project-credit -->
+
+
 Testnet-first build of a USDT bridge for **BOT Chain**, using **Hyperlane** as the
 message layer — so BOT Chain gets USDT routes to chains the official bridge does
 not cover (Arbitrum, Polygon, Base, Optimism, Avalanche, …).
